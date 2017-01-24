@@ -1,0 +1,10 @@
+AbstractTextEditor.Color.Background=0,0,0
+AbstractTextEditor.Color.Background.SystemDefault=false
+AbstractTextEditor.Color.SelectionBackground.SystemDefault=false
+AbstractTextEditor.Color.SelectionForeground=145,145,145
+currentLineColor=48,48,48
+eclipse.preferences.version=1
+org.eclipse.cdt.ui.occurrenceIndicationColor=128,0,0
+overviewRuler_migration=migrated_3.1
+printMargin=true
+printMarginColor=204,207,210
