@@ -1,0 +1,5 @@
+@ filename: init_timer3.s
+@
+@ This function initializes timer3 for 1second intervals
+@
+@ written by: James Ross

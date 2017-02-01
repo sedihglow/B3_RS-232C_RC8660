@@ -1,4 +1,4 @@
-@ Filename: project2_P3_toggleLED.s
+@ Filename: toggleLED.s
 @ Recieves a bit position, the desired output and the gpio base address
 @ for desired gpio bank
 @
@@ -11,9 +11,8 @@
 
 @ void GPIO_toggleLED(word setMask, bool output, word gpioBaseAddr)
 .text
-.global _GPIO1_toggleLED
-
-_GPIO1_toggleLED:
+.global _toggleLED
+_toggleLED:
 .equ GPIO_CLEAR_DATA_OUT, 0x190 @ GPIO_CLEARDATAOUT register adderess
 .equ GPIO_SET_DATA_OUT,   0x194 @ GPIO_SETDATAOUT register address
 

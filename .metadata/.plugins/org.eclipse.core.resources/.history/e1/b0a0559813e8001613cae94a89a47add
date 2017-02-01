@@ -1,0 +1,29 @@
+@ filename: init_pinMapping.s
+@
+@ Map the required pins to the appropriate modes for UART4 on P8 and P9
+@
+@ Written by: James Ross
+
+.text
+.global _init_pinMap
+_init_pinMap:
+@ Control Module registers for pin maps
+.equ CTLMOD_BASE, 	    0x44E10000 @ control module	 		    Base Address
+.equ UART4_CTSN_PADREG, 0x8D0	   @ conf_lcd_data12, P8 pin35	register offset
+.equ UART4_RTSN_PADREG, 0x8D4 	   @ conf_lcd_data13, P8 pin33  register offset
+.equ UART4_RXD_PADREG,  0x870  	   @ conf_gpmc_wait0, P8 pin11  register offset
+.equ UART4_TXD_PADREG,	0x874  	   @ conf_gpmc_wpn,   P8 pin13	register offset
+.equ SET_MODE6,			0x6		   @ mux mode 6					Mask
+
+@ Register assignment defintions
+controlBase .req R10
+
+@********************** START _init_pinMap *************************************
+	STMFD SP!, {R0-R10,LR}
+
+	LDR controlBase, =CT
+
+
+	LDMFD SP!, {R0-R10,PC}
+
+.end
