@@ -1,0 +1,51 @@
+@ filename: init_syth_8660.s
+@
+@ Initializes the features and rates of the RC8660 through UART4
+@
+@ Written by: James Ross
+
+.text
+.global _init_syth_8660
+_init_syth_8660:
+.equ UART4_BASE,    0x481A8000 @ UART4          	      Base Address
+.equ UART_TXHR,	    0x0	  	   @ THR Transmit Holding     register offset
+
+.equ CR_LOCKBAUD,   0x0D	   @ Character to send to 8660 to lock Baud rate
+
+uart4Base .req R10
+@********************* Start _init_syth_8660 ***********************************
+
+	STMFD SP!, {R0-R10, LR}
+	
+	LDR uart4Base, =UART4_BASE
+
+	@ Lock the baud rate. SEE NOTE IN INT_UART4 on strange behavior
+	MOV R4, #CR_LOCKBAUD
+	STR R4, [uart4Base, #UART_TXHR]
+
+
+LDR R8, =0xFFFFF
+LDR R9, [R8]
+WAIT:
+SUB R9, #1
+CMP R9, #0x0
+BNE WAIT
+@ Testing to set if it will talk ********	
+	LDR R4, =CHAR_PTR
+	@LDR R1, [R4]
+	LDRB R2, [R4]
+	STRB R2, [uart4Base, #UART_TXHR]
+@****** END TEST ****	
+
+
+	LDMFD SP!, {R0-R10, PC}
+	
+.data
+.align 2
+MESSAGE:
+	.ascii "a"
+.align 2
+CHAR_PTR:
+	.word MESSAGE
+.end
+@*************** EOF **************
