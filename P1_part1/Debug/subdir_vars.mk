@@ -10,8 +10,10 @@ S_UPPER_SRCS += \
 ../startup_ARMCA8.S 
 
 S_SRCS += \
+../init_clocks.s \
 ../init_gpio.s \
 ../init_pinMapping.s \
+../init_syth_8660.s \
 ../init_timer3.s \
 ../init_uart4.s \
 ../int_director.s \
@@ -19,8 +21,10 @@ S_SRCS += \
 ../toggleLED.s 
 
 OBJS += \
+./init_clocks.o \
 ./init_gpio.o \
 ./init_pinMapping.o \
+./init_syth_8660.o \
 ./init_timer3.o \
 ./init_uart4.o \
 ./int_director.o \
@@ -29,8 +33,10 @@ OBJS += \
 ./toggleLED.o 
 
 S_DEPS += \
+./init_clocks.d \
 ./init_gpio.d \
 ./init_pinMapping.d \
+./init_syth_8660.d \
 ./init_timer3.d \
 ./init_uart4.d \
 ./int_director.d \
@@ -44,8 +50,10 @@ S_UPPER_DEPS__QUOTED += \
 "startup_ARMCA8.d" 
 
 S_DEPS__QUOTED += \
+"init_clocks.d" \
 "init_gpio.d" \
 "init_pinMapping.d" \
+"init_syth_8660.d" \
 "init_timer3.d" \
 "init_uart4.d" \
 "int_director.d" \
@@ -53,8 +61,10 @@ S_DEPS__QUOTED += \
 "toggleLED.d" 
 
 OBJS__QUOTED += \
+"init_clocks.o" \
 "init_gpio.o" \
 "init_pinMapping.o" \
+"init_syth_8660.o" \
 "init_timer3.o" \
 "init_uart4.o" \
 "int_director.o" \
@@ -63,8 +73,10 @@ OBJS__QUOTED += \
 "toggleLED.o" 
 
 S_SRCS__QUOTED += \
+"../init_clocks.s" \
 "../init_gpio.s" \
 "../init_pinMapping.s" \
+"../init_syth_8660.s" \
 "../init_timer3.s" \
 "../init_uart4.s" \
 "../int_director.s" \

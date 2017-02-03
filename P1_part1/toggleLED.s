@@ -23,7 +23,7 @@ gpioBaseAddr .req R3   @ passed from caller
 clearDataOut .req R4   @ Sets to GPIO1_CLEARDATAOUT register
 setDataOut   .req R5   @ Sets to GPIO1_SETDATAOUT register
 
-    STMFD R13!, {R1-R5, LR} @ Push, start function
+    STMFD SP!, {R1-R5, LR} @ Push, start function
 
     CMP output, #0x00 @ Set high or low?
     BEQ SET_LOW
@@ -36,5 +36,6 @@ SET_LOW:
     STR setMask, [gpioBaseAddr, #GPIO_CLEAR_DATA_OUT]
 
 END:
-    LDMFD R13!, {R1-R5, PC}     @ Pop, End function
+    LDMFD SP!, {R1-R5, PC}     @ Pop, End function
 .end
+@****************** EOF ******************

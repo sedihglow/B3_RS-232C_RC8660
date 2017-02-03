@@ -15,7 +15,6 @@ _start:
 .equ GPIO1_CLK_CTRL,   0x44E000AC   @ CM_PER_GPIO1_CLKCTRL  register address
 .equ TIMER3_CLK_CTRL,  0x44E00084  @ CM_PER_TIMER3_CLKCTRL register address
 .equ TIMER3_CLKSEL,    0x44E0050C  @ CLKSEL_TIMER3_CLK     register address
-
 .equ UART4_CLK_CTRL,   0x78        @ CM_PER_UART_CLKCTRL   register offset
 
 @ GPIO definitions
@@ -73,7 +72,7 @@ _start:
 
 @ register assignments
 
-@********************** START MAIN *********************************************
+@********************** START _start *******************************************
 STACK_INIT:
 	LDR SP, =SVC_STACK
 	ADD SP, SP, #0x1000 @ point to top of stack
@@ -86,14 +85,19 @@ STACK_INIT:
 INIT_PIN_MAP:
 	BL _init_pinMap
 	
+INIT_CLOCKS:
+	BL _init_clocks
+	
 INIT_GPIO:
 	BL _init_gpio
 
-@INIT_TIMER3:
-@	BL _init_timer3
-
 INIT_UART4:
+	BL _init_uart4
 	
+INIT_8660:
+	BL _init_syth_8660
+	
+	NOP	
 .data
 
 .align 2

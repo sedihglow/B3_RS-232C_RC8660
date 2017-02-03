@@ -1,2 +1,2 @@
-DEFAULT_CCS_TARGET_CONFIGURATION=\\\\khensu\\Home05\\jamr2\\ti\\CCSTargetConfigurations\\BeagleBoneBlack.ccxml
+DEFAULT_CCS_TARGET_CONFIGURATION=N\:\\ECE372\\P1_part1\\targetConfigs\\BeagleBone_Black.ccxml
 eclipse.preferences.version=1

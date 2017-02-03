@@ -1,1 +1,1 @@
-"./init_gpio.o" "./init_pinMapping.o" "./init_timer3.o" "./init_uart4.o" "./int_director.o" "./main_p1_part1.o" "./startup_ARMCA8.o" "./toggleLED.o" -Wl,-T"../AM335x.lds" -Wl,--start-group -l"c" -l"gcc" -l"nosys" -Wl,--end-group 
+"./init_clocks.o" "./init_gpio.o" "./init_pinMapping.o" "./init_syth_8660.o" "./init_timer3.o" "./init_uart4.o" "./int_director.o" "./main_p1_part1.o" "./startup_ARMCA8.o" "./toggleLED.o" -Wl,-T"../AM335x.lds" -Wl,--start-group -l"c" -l"gcc" -l"nosys" -Wl,--end-group 
