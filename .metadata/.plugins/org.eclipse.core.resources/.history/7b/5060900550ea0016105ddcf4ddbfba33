@@ -1,0 +1,10 @@
+@ filename: init_interrupt.s
+@
+@ initializes the registers from INT controller
+@
+@ written by: James Ross
+
+.text
+.global _init_interrupt
+_init_interrupt:
+	

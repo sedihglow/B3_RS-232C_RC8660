@@ -61,21 +61,13 @@ lcrReg    .req R9
 	MOV R3, #LCR_OP_MODE	
 	STR R3, [lcrReg]
 	
-	@ Lock Baud Rate by sending CR character to 8660
-	@ TODO: Find out why this character MUST be sent right acter OP_MODE, if you
-	@ 		dont it does not work seem to work.
-	@		- Also, it sends the 6C rom 86600 sometimes before i send the 
-	@ 		  0x0d character, even without sending the character, right after
-	@ 		  going into OP_MODE
-	@MOV R4, #CR_LOCKBAUD
-	@STR R4, [uart4Base, #UART_TXHR]
-	
 @*********************** Set interrupt fields **********************************
 	
+	@ TODO: Maybe do this after a button press, disable at the end of count down	
 	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
 	@ Regiser (THR) is empty
-	MOV R4, #SET_UART_IER
-	STR R4, [uart4Base, #UART_IER]
+	@MOV R4, #SET_UART_IER
+	@STR R4, [uart4Base, #UART_IER]
 	
 	LDMFD SP!, {R0-R10, PC}
 .end

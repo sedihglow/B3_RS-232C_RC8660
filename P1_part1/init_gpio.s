@@ -7,10 +7,6 @@
 .text
 .global _init_gpio
 _init_gpio:
-@ CLK definitions
-.equ CLK_EN, 		   0x00000002   @ Sets IDLEST functional, Module mode EN
-.equ GPIO1_CLK_CTRL,   0x44E000AC   @ CM_PER_GPIO1_CLKCTRL  register address
-
 @ GPIO definitions
 .equ GPIO1_BASE,          0x4804C000  @ GPIO1               Base Address
 .equ GPIO_OE,             0x134       @ GPIO_OE             register offset

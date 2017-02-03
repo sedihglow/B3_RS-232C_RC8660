@@ -1,0 +1,124 @@
+@ This program will use a RS-232C driver to make speach come out of an RC
+@ systems 8660 coice synthesizer.
+@
+@ File name: main_p1_part1.s
+@ Board: Beagle Bone Black
+@ Written by: James Ross
+
+.text
+.global MESSAGE
+.global CHAR_PTR
+.global _start
+_start:
+@********************** EQU DEFINITIONS ****************************************
+@ CLK definitions
+.equ CM_PER_BASE,      0x44E00000   @ CM_PER base register
+.equ CLK_EN, 		   0x00000002   @ Sets IDLEST functional, Module mode EN
+.equ GPIO1_CLK_CTRL,   0x44E000AC   @ CM_PER_GPIO1_CLKCTRL  register address
+.equ TIMER3_CLK_CTRL,  0x44E00084  @ CM_PER_TIMER3_CLKCTRL register address
+.equ TIMER3_CLKSEL,    0x44E0050C  @ CLKSEL_TIMER3_CLK     register address
+.equ UART4_CLK_CTRL,   0x78        @ CM_PER_UART_CLKCTRL   register offset
+
+@ GPIO definitions
+.equ GPIO1_BASE,          0x4804C000  @ GPIO1               Base Address
+.equ GPIO_OE,             0x134       @ GPIO_OE             register offset
+.equ GPIO_CLEAR_DATAOUT,  0x190       @ GPIO_CLEARDATAOUT   register offset
+.equ GPIO_SET_DATAOUT,    0x194       @ GPIO_SETDATAOUT     register offset
+.equ GPIO_FALLING_DETECT, 0x14C       @ GPIO_FALLINGDETECT  register offset
+.equ GPIO_IRQSTAT0,       0x2C        @ GPIO_IRQSTATUS_0    register offset
+.equ GPIO_IRQSTAT_SET0,   0x34        @ GPIO_IRQSTAT_SET_0  register offset
+
+@ Interupt definitions
+.equ INTC_BASE,           0x48200000  @ INCPS               Base Address
+.equ INTC_CONTROL,        0x48        @ INTC_CONTROL        register offset
+.equ INTC_CONFIG,         0x10        @ INTC_SYSCONFIG      register offset
+.equ INTC_MIR_CLEAR2,     0xC8        @ INTC_MIR_CLEAR2     register offset
+.equ INTC_MIR_CLEAR3,     0xE8        @ INTC_MIR_CLEAR3     register offset
+.equ INTC_MIR_SET3,       0xEC        @ INTC_MIR_SET3       register offset
+.equ INTC_PENDING_IRQ3,   0xF8        @ INTC_PENDING_IRQ3   register offset
+.equ GPIOINT1A,           0x4         @ GPIOINT1A in MIR3   Mask
+.equ TINT3,               0x20        @ TINT3 in MIR2       Mask
+
+@ Timer defintions
+.equ TIMER3_BASE,         0x48042000  @ DMTIMER3            Base Address
+.equ TIMER_TIOCP_CFG,     0x10        @ TIOCP_CFG           register offset
+.equ TIMER_IRQEN_SET,     0x2C        @ IRQENABLE_SET       register offset
+.equ TIMER_TCLR,          0x38        @ TCLR                register offset
+.equ TIMER_TCRR,          0x3C        @ TCRR                register offset
+.equ TIMER_TLDR,          0x40        @ TLDR                register offset
+.equ TIMER_COUNTER_VAL,   0xFFFF80FF  @ Loaded into TLDR and TCRR, 1.00793s
+  
+@ UART definitions
+.equ UART4_BASE,   0x481A8000 @ UART4          	   	  Base Address
+.equ UART_LCR,     0xC		  @ Line Ctrl 			  register offset
+.equ UART_DLH,     0x04	 	  @ DLH div latch high    register offset 
+.equ UART_TXHR,	   0x0	  	  @ THR Transmit Holding  register offset
+.equ UART_DLL,     0x0		  @ DLL div latch low     register offset
+.equ UART_FCR,     0x8	  	  @ FIFO control		  register offset
+.equ MODEM_CTRL,   0x10 	  @ Moden CTRL 		 	  register offset
+.equ UART_IIR,     0x8	 	  @ Interrupt ID		  register offset
+.equ UART_IER,     0x4	 	  @ IER_UART, Int EN      register offset
+.equ SET_UART_IER, 0x000A  	  @ THRIT,MODEMSTIT 16bit register offset
+
+@ LED definitions
+.equ SET_LED1_OUTPUT, 0xFFBFFFFF      @ Mask to set GPIO1_22 as output
+.equ SET_LED1,    	  0x00400000      @ Mask to set LED1, GPIO1_22
+
+@ Control Module registers for pin maps
+.equ CRLMOD_BASE, 	    0x44E10000 @ control module	 		    Base Address
+.equ UART4_CTSN_PADREG, 0x8D0	   @ conf_lcd_data12, P8 pin35	register offset
+.equ UART4_RTSN_PADREG, 0x8D4 	   @ conf_lcd_data13, P8 pin33  register offset
+.equ UART4_RXD_PADREG,  0x870  	   @ conf_gpmc_wait0, P8 pin11  register offset
+.equ UART4_TXD_PADREG,	0x874  	   @ conf_gpmc_wpn,   P8 pin13	register offset
+.equ SET_MODE6,			0x6		   @ mux mode 6					Mask
+
+@ register assignments
+
+@********************** START _start *******************************************
+STACK_INIT:
+	LDR SP, =SVC_STACK
+	ADD SP, SP, #0x1000 @ point to top of stack
+	CPS #0x12			@ Switch to IRQ mode
+	
+	LDR SP, =IRQ_STACK
+	ADD SP, SP, #0x1000
+	CPS #0x13			@ Switch back to SVC mode
+
+INIT_PIN_MAP:
+	BL _init_pinMap
+	
+INIT_CLOCKS:
+	BL _init_clocks
+	
+INIT_GPIO:
+	BL _init_gpio
+
+INIT_UART4:
+	BL _init_uart4
+	
+INIT_8660:
+	BL _init_syth_8660
+	
+INIT_INTERRUPT:
+	BL _init_interrupt
+	
+	NOP	
+.data
+MESSAGE: .byte 0x61
+		 .byte 0x0D
+.align 2
+CHAR_PTR: .word MESSAGE
+
+.align 2
+	SVC_STACK:
+		.rept 1014
+			.word 0x0000
+		.endr
+	IRQ_STACK:
+		.rept 1024
+			.word 0x0000
+		.endr
+
+
+.end
+@@@@@@@@@@ EOF @@@@@@@@@@

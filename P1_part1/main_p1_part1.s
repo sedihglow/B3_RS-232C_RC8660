@@ -6,6 +6,8 @@
 @ Written by: James Ross
 
 .text
+.global MESSAGE
+.global CHAR_PTR
 .global _start
 _start:
 @********************** EQU DEFINITIONS ****************************************
@@ -97,14 +99,29 @@ INIT_UART4:
 INIT_8660:
 	BL _init_syth_8660
 	
-	NOP	
+@INIT_TIMER3:
+@		_init_timer3
+	
+INIT_INTERRUPT:
+	BL _init_interrupt
+
+WAIT_LOOP:
+	B WAIT_LOOP
+
 .data
+.align 2
+	MESSAGE: 
+		.byte 0x61
+		.byte 0x0D
+.align 2
+	CHAR_PTR: .word MESSAGE
 
 .align 2
 	SVC_STACK:
 		.rept 1014
 			.word 0x0000
 		.endr
+.align 2
 	IRQ_STACK:
 		.rept 1024
 			.word 0x0000

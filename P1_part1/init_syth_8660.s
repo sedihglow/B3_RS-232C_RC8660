@@ -7,14 +7,14 @@
 .text
 .global _init_syth_8660
 _init_syth_8660:
+@ UART definitions
 .equ UART4_BASE,    0x481A8000 @ UART4          	      Base Address
 .equ UART_TXHR,	    0x0	  	   @ THR Transmit Holding     register offset
-
 .equ CR_LOCKBAUD,   0x0D	   @ Character to send to 8660 to lock Baud rate
 
-.equ NOP_COUNT, 0x0300000F
-.equ NUM, 0x00340000
+@.equ NUM, 0x00340000 @ for testing
 
+@ register assignment definitions
 uart4Base .req R10
 
 @********************* Start _init_syth_8660 ***********************************
@@ -63,19 +63,27 @@ uart4Base .req R10
 	
 @*************** END TEST CODE 1 **********************************************	
 	
-
-
-
-
-
+@   	movs  r0, #NUM    
+@LOOP4: subs  r0, r0, #1  
+@   	  bne   LOOP4
+   	  
+@   	  LDR R0, =CHAR_PTR
+@   	  LDR R1, [R0]
+@   	  LDRB R4, [R1], #1 
+@   	  STRB R4, [uart4Base, #UART_TXHR] 
+@   	movs  r0, #NUM    
+@LOOP2: subs  r0, r0, #1  
+@   	  bne   LOOP2
 	
+@   	  LDR R0, =CHAR_PTR
+@   	  LDR R1, [R0]
+@   	  LDRB R4, [R1], #1
+@   	  STR R1, [R0]
+@   	  STRB R4, [uart4Base, #UART_TXHR]
+
+@ ***************** END FAIL TEST CODE 2 WITH POINTER, WHYYYY *****************
+   	  
    
 	LDMFD SP!, {R0-R10, PC}
-
-.data
-.align 2
-MESSAGE: .ascii "A"
-		 .byte 0x0D
-CHAR_PTR: .word MESSAGE	
 .end
 @*************** EOF **************

@@ -1,0 +1,35 @@
+@ filename: init_interrupt.s
+@
+@ initializes the registers from INT controller
+@
+@ written by: James Ross
+
+.text
+.global _init_interrupt
+_init_interrupt:
+@ Interupt definitions
+.equ INTC_BASE,           0x48200000  @ INCPS               Base Address
+.equ INTC_CONTROL,        0x48        @ INTC_CONTROL        register offset
+.equ INTC_CONFIG,         0x10        @ INTC_SYSCONFIG      register offset
+.equ INTC_MIR_CLEAR2,     0xC8        @ INTC_MIR_CLEAR2     register offset
+.equ INTC_MIR_CLEAR3,     0xE8        @ INTC_MIR_CLEAR3     register offset
+.equ INTC_MIR_SET3,       0xEC        @ INTC_MIR_SET3       register offset
+.equ INTC_PENDING_IRQ3,   0xF8        @ INTC_PENDING_IRQ3   register offset
+.equ GPIOINT1A,           0x4         @ GPIOINT1A in MIR3   Mask
+
+@ reg assignment definitions
+
+intcBase .req R10
+
+
+@***************************** start _init_interrupt ***************************
+
+	STMFD SP!, {R0-R10, LR}
+	
+	
+	
+	
+	
+	
+	LDMFD SP!, {R0-R10, SP}
+.end
