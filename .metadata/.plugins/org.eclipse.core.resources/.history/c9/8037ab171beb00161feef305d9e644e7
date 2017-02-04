@@ -42,8 +42,6 @@ BTN_IRQ_TST:
 	@ Check if the button on GPIO_31 triggered the interrupt
 	LDR gpio1Base, =GPIO1_BASE
 	LDR R0, [gpio1Base, #GPIO_IRQ_STAT_0]
-	TST R0, #GPIO_31
-	BNE SVC_BUTTON @ If GPIO_31 has a pending interrupt, service the button
 	
 	
 

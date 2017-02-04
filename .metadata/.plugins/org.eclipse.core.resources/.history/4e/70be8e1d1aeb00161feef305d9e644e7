@@ -17,45 +17,13 @@ _int_director:
 .equ INTC_PENDING_IRQ3,   0xF8        @ INTC_PENDING_IRQ3   register offset
 .equ GPIOINT1A,           0x4         @ GPIOINT1A in MIR3   Mask
 
-@ GPIO definitions
-.equ GPIO1_BASE,		  0x4804C000  @ GPIO1 				Base Address
-.equ GPIO_IRQ_STAT_0,	  0x2C	  	  @ GPIO_IRQSTATUS_0 	register offset
-.equ GPIO_31,			  0x80000000  @ GPIO_31 raised bit	Mask
-
-@ register assignment definitions
-intcBase  .req R10
-gpio1Base .req R9
-
 @******************************* start _int_director ***************************
 	STMFD SP!, {R0-R12, LR}
-	LDR intcBase, =INTC_BASE
-UART4_IRQ_TST:
-	
 
-BTN_IRQ_TST:
-	@ Check if INT occured from GPIO1
-	LDR R0, [intcBase, #INTC_PENDING_IRQ3]
-	TST R0, #GPIOINT1A
-	@BEQ TIMER_IRQ_TST   @ place holder for future timer
-	BEQ END_SVC
-	
-	@ Check if the button on GPIO_31 triggered the interrupt
-	LDR gpio1Base, =GPIO1_BASE
-	LDR R0, [gpio1Base, #GPIO_IRQ_STAT_0]
-	TST R0, #GPIO_31
-	BNE SVC_BUTTON @ If GPIO_31 has a pending interrupt, service the button
-	
-	
 
-SVC_BUTTON:
 
-CTS_TST:
 
-THR_TST:
 
-SCV_TALKER:
-
-SEND_CHAR:
 
 
 

@@ -2720,3 +2720,112 @@ org.eclipse.core.commands.NotEnabledException: Trying to execute the disabled co
 	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:636)
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:591)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1450)
+!SESSION 2017-02-04 11:53:09.081 -----------------------------------------------
+eclipse.buildId=4.3.0.M20130911-1000
+java.version=1.6.0_13
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Framework arguments:  -product com.ti.ccstudio.branding.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product com.ti.ccstudio.branding.product
+
+!ENTRY org.eclipse.ui 4 4 2017-02-04 11:53:20.866
+!MESSAGE Unable to find Action Set: org.eclipse.rtsc.xdctools.ui.actionSet2
+
+!ENTRY org.eclipse.equinox.p2.engine 4 4 2017-02-04 11:53:31.060
+!MESSAGE An error occurred while collecting items to be installed
+!SUBENTRY 1 org.eclipse.equinox.p2.engine 4 0 2017-02-04 11:53:31.060
+!MESSAGE session context was:(profile=epp.package.cpp, phase=org.eclipse.equinox.internal.p2.engine.phases.Collect, operand=, action=).
+!SUBENTRY 1 org.eclipse.equinox.p2.engine 4 0 2017-02-04 11:53:31.060
+!MESSAGE No artifact repository available.
+!STACK 0
+java.lang.Exception: noArtifactRepositoriesAvailable
+	at org.eclipse.equinox.internal.p2.engine.DownloadManager.start(DownloadManager.java:95)
+	at org.eclipse.equinox.internal.p2.engine.phases.Collect.completePhase(Collect.java:104)
+	at org.eclipse.equinox.internal.p2.engine.Phase.postPerform(Phase.java:251)
+	at org.eclipse.equinox.internal.p2.engine.Phase.perform(Phase.java:101)
+	at org.eclipse.equinox.internal.p2.engine.PhaseSet.perform(PhaseSet.java:47)
+	at org.eclipse.equinox.internal.p2.engine.Engine.perform(Engine.java:75)
+	at org.eclipse.equinox.internal.p2.engine.Engine.perform(Engine.java:44)
+	at org.eclipse.equinox.p2.operations.ProvisioningSession.performProvisioningPlan(ProvisioningSession.java:151)
+	at org.eclipse.equinox.p2.operations.ProfileModificationJob.runModal(ProfileModificationJob.java:79)
+	at org.eclipse.rtsc.project.core.extdiscovery.ExtensionSiteDiscoveryManager.uninstallFeatures(ExtensionSiteDiscoveryManager.java:636)
+	at org.eclipse.rtsc.project.core.extdiscovery.ExtensionSiteDiscoveryManager.cleanUpDeletedSites(ExtensionSiteDiscoveryManager.java:409)
+	at org.eclipse.rtsc.project.ui.extdiscovery.ExtensionSiteDiscoveryDelegate.cleanUpDeletedSites(ExtensionSiteDiscoveryDelegate.java:81)
+	at org.eclipse.rtsc.project.ui.extdiscovery.ExtensionSiteDiscoveryDelegate.access$0(ExtensionSiteDiscoveryDelegate.java:80)
+	at org.eclipse.rtsc.project.ui.extdiscovery.ExtensionSiteDiscoveryDelegate$1.run(ExtensionSiteDiscoveryDelegate.java:46)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:53)
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.618
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.operations 4 10001 2017-02-04 11:54:13.618
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.618
+!MESSAGE Unexpected Error.  Could not process the request. Check the error log for details.
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.626
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.operations 4 10001 2017-02-04 11:54:13.626
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.626
+!MESSAGE Unexpected Error.  Could not process the request. Check the error log for details.
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.641
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.operations 4 10001 2017-02-04 11:54:13.641
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.641
+!MESSAGE Unexpected Error.  Could not process the request. Check the error log for details.
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.643
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.operations 4 10001 2017-02-04 11:54:13.643
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.643
+!MESSAGE Unexpected Error.  Could not process the request. Check the error log for details.
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.721
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.operations 4 10001 2017-02-04 11:54:13.721
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.721
+!MESSAGE Unexpected Error.  Could not process the request. Check the error log for details.
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.723
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.operations 4 10001 2017-02-04 11:54:13.723
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.723
+!MESSAGE Unexpected Error.  Could not process the request. Check the error log for details.
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.733
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.operations 4 10001 2017-02-04 11:54:13.733
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.733
+!MESSAGE Unexpected Error.  Could not process the request. Check the error log for details.
+
+!ENTRY org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.735
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.operations 4 10001 2017-02-04 11:54:13.735
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.operations 4 0 2017-02-04 11:54:13.735
+!MESSAGE Unexpected Error.  Could not process the request. Check the error log for details.
+
+!ENTRY org.eclipse.equinox.p2.touchpoint.natives 4 0 2017-02-04 11:55:01.031
+!MESSAGE org.eclipse.equinox.internal.p2.touchpoint.natives.actions.UnzipAction the files to be unzipped is not here
+
+!ENTRY org.eclipse.equinox.p2.touchpoint.natives 4 0 2017-02-04 11:55:01.034
+!MESSAGE org.eclipse.equinox.internal.p2.touchpoint.natives.actions.UnzipAction error unzipping zipfile: C:\ti\ccsv6\eclipse\downloads\xdctools_3_30_03_47_core_win32_nojre.zipdestination: C:\ti\ccsv6\eclipse/../..
+!SESSION 2017-02-04 12:24:00.497 -----------------------------------------------
+eclipse.buildId=4.3.0.M20130911-1000
+java.version=1.6.0_13
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Framework arguments:  -product com.ti.ccstudio.branding.product -product com.ti.ccstudio.branding.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product com.ti.ccstudio.branding.product -data N:\ECE372 -product com.ti.ccstudio.branding.product
+
+!ENTRY org.eclipse.ui 4 4 2017-02-04 12:24:03.800
+!MESSAGE Unable to find Action Set: org.eclipse.rtsc.xdctools.ui.actionSet2
+
+!ENTRY org.eclipse.equinox.p2.metadata.repository 4 1000 2017-02-04 12:24:42.172
+!MESSAGE No repository found at file:/c:/ti/xdctools_3_31_03_43_core/.
