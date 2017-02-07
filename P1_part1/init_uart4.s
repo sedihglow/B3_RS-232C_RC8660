@@ -33,7 +33,7 @@ _init_uart4:
 uart4Base .req R10
 lcrReg    .req R9
 @************************* Start _init_uart4 ***********************************	
-	STMFD SP!, {R0-R10,LR}
+	STMFD SP!, {R3, R4, R9, R10, LR}
 	
 	LDR uart4Base, =UART4_BASE
 	ADD lcrReg, uart4Base, #UART_LCR
@@ -57,16 +57,6 @@ lcrReg    .req R9
 	MOV R3, #LCR_OP_MODE	
 	STR R3, [lcrReg]
 	
-@*********************** Set interrupt fields **********************************
-	
-	@ TODO: Pretty sure this should be only one on the button press. Disabled
-	@ 		upon the last message being sent, so next button press will set it
-	@		again.
-	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
-	@ Regiser (THR) is empty
-	@MOV R4, #SET_UART_IER
-	@STR R4, [uart4Base, #UART_IER]
-	
-	LDMFD SP!, {R0-R10, PC}
+	LDMFD SP!, {R3, R4, R9, R10, PC}
 .end
 @********** EOF ************

@@ -22,11 +22,11 @@ clearLowBitsFlag .req R9
 setMode6 		 .req R8	
 
 @********************** START _init_pinMap *************************************
-	STMFD SP!, {R0-R10,LR}
+	STMFD SP!, {R3-R5, R8-R10,LR}
 
 	LDR controlBase, =CTLMOD_BASE @ Set base address for reference
-	MOV R9, #CLEAR_LOW3	@ Mask to clear lower 3 bits
-	MOV R8, #SET_MODE6  @ Mask to set to mode 6
+	MOV clearLowBitsFlag, #CLEAR_LOW3	@ Mask to clear lower 3 bits
+	MOV setMode6, #SET_MODE6  @ Mask to set to mode 6
 
 SET_CTSN:	
 	ADD R3, controlBase, #UART4_CTSN_PADREG @ Go to CTSN pad register
@@ -64,6 +64,6 @@ SET_RXD:
 	ORR R5, R5, setMode6		 @ Set lower 3 bits to 110
 	STR R5, [R3]		    	 @ Store back into RXD pad register
 
-	LDMFD SP!, {R0-R10,PC}
+	LDMFD SP!, {R3-R5, R8-R10, PC}
 .end
 @********************** EOF ***********************

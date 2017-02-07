@@ -23,20 +23,20 @@ _init_gpio:
 gpio1Base .req R9					  @ R9 reserved for gpio1 base address
 
 @*********************** start _init_gpio **************************************
-	STMFD SP!, {R1-R10, LR}
+	STMFD SP!, {R4-R6, LR}
 	
 	
 	@ Set GPIO1_22 as output
 	LDR gpio1Base, =GPIO1_BASE
-	MOV R8, #SET_LED1			@ GPIO1_22
-	STR R8, [gpio1Base, #GPIO_CLEAR_DATAOUT]
+	MOV R4, #SET_LED1			@ GPIO1_22
+	STR R4, [gpio1Base, #GPIO_CLEAR_DATAOUT]
 	
 	@ Enable GPIO1_22
-	ADD R7, gpio1Base, #GPIO_OE @ Set R7 as GPIO output enable
-	MOV R8, #SET_LED1_OUTPUT	@ GPIO1_ 22, R8 set to LED1 output enable value
-	LDR R6, [R7]			    @ Load
-	AND R6, R6, R8 			    @ Modify
-	STR R6, [R7]				@ Store to set LED1 as output
+	ADD R4, gpio1Base, #GPIO_OE @ Set R7 as GPIO output enable
+	MOV R5, #SET_LED1_OUTPUT	@ GPIO1_ 22, R8 set to LED1 output enable value
+	LDR R6, [R4]			    @ Load
+	AND R6, R6, R5 			    @ Modify
+	STR R6, [R4]				@ Store to set LED1 as output
 	
 @********************** set interrupt fields ***********************************
 	@ Set interupt to trigger from high to low on GPIO1_31	
@@ -49,6 +49,6 @@ gpio1Base .req R9					  @ R9 reserved for gpio1 base address
 	@ Enable interrupt field for GPIO_31
 	STR R5, [gpio1Base, #GPIO_IRQSTAT_SET0]
 	
-	LDMFD SP!, {R1-R10, PC}
+	LDMFD SP!, {R4-R6, PC}
 .end
 @******************* EOF **********************

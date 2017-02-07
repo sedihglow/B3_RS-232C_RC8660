@@ -10,7 +10,6 @@ _init_interrupt:
 @ Interupt definitions
 .equ INTC_BASE,           0x48200000  @ INCPS               Base Address
 .equ INTC_MIR_CLEAR1,     0xA8        @ INTC_MIR_CLEAR2     register offset
-@.equ INTC_MIR_CLEAR2,     0xC8       @ INTC_MIR_CLEAR2     register offset
 .equ INTC_MIR_CLEAR3,     0xE8        @ INTC_MIR_CLEAR3     register offset
 .equ GPIOINT1A,           0x4         @ GPIOINT1A in MIR3   Val
 .equ UART4INT,			  0x2000 	  @ UART4INT in MIR1	Val
@@ -19,7 +18,7 @@ _init_interrupt:
 intcBase .req R10
 
 @***************************** start _init_interrupt ***************************
-	STMFD SP!, {R0-R10, LR}
+	STMFD SP!, {R1, R10, LR}
 	
 	LDR intcBase, =INTC_BASE
 	
@@ -36,6 +35,6 @@ intcBase .req R10
 	BIC R1, #0x80
 	MSR CPSR_c, R1
 	
-	LDMFD SP!, {R0-R10, PC}
+	LDMFD SP!, {R1, R10, PC}
 .end
 @************** EOF *************

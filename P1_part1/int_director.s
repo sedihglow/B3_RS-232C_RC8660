@@ -15,7 +15,7 @@ _int_director:
 .equ INTC_MIR_CLEAR3,     0xE8       @ INTC_MIR_CLEAR3     	  register offset
 .equ INTC_MIR_SET3,       0xEC       @ INTC_MIR_SET3       	  register offset
 .equ INTC_PENDING_IRQ1,	  0xB8		 @ INTC_PENDING_IRQ1	  register offset
-.equ INTC_PENDING_IRQ3,   0xF8       @ INTC_PENDING_IRQ2      register offset
+.equ INTC_PENDING_IRQ3,   0xF8       @ INTC_PENDING_IRQ3      register offset
 .equ GPIOINT1A,           0x4        @ GPIOINT1A in MIR1/IPI3 Mask
 
 @ GPIO definitions
@@ -46,7 +46,7 @@ gpio1Base .req R9
 uart4Base .req R8
 
 @******************************* start _int_director ***************************
-	STMFD SP!, {R0-R12, LR}
+	STMFD SP!, {R3-R5, R8-R10, LR}
 	LDR intcBase, =INTC_BASE
 	LDR uart4Base, =UART4_BASE
 	
@@ -100,8 +100,7 @@ SEND_CHAR:
    	LDR R4, [R3]
     LDRB R5, [R4], #1			     @ Get character to send, increment addr
    	
-   	ADD R8, uart4Base, #UART_TXHR 
-    STRB R5, [R8] @ Send char on the UART
+    STRB R5, [uart4Base, #UART_TXHR] @ Send char on the UART
     STR R4, [R3]					 @ Store incremented ptr position
 
 	@ Check to see if we are on the last character
@@ -115,6 +114,7 @@ SEND_CHAR:
 	STR R4, [uart4Base, #UART_IER]
 	
 	B END_SVC
+	
 RESET_UART_VALUES:
 	STMFD SP!, {R0-R12, LR}
 	
@@ -124,8 +124,8 @@ RESET_UART_VALUES:
 	STR R4, [R3]
 	
 	@ disbale UART interrupts, enabled on next button press
-	MOVEQ R4, #0x0
-	STREQ R4, [uart4Base, #UART_IER]
+	MOV R4, #0x0
+	STR R4, [uart4Base, #UART_IER]
 	
 	MOV R3, #0x0
 	STRB R3, [uart4Base, #UART_MCR]
@@ -145,20 +145,10 @@ BTN_IRQ_TST:
 	BEQ END_SVC @ If GPIO_31 does not have a pending INT, return
 	
 SVC_BUTTON:
-	@ ***********************************************************************
-	@ TODO: Set a flag or use a value that prevents the button being pressed
-	@		while the message is being sent to be spoken
-	@ **********************************************************************
-
 	@ Disable GPIO1_31 intrrupt requests and INTC interrupt requests
 	MOV R3, #GPIO_31	
 	STR R3, [gpio1Base, #GPIO_IRQ_STAT_0] @ 1 at bit 31 of GPIO_IRQ_STAT_0
 
-	@ TODO: Pretty sure this should be only one on the button press. Disabled
-	@ 		upon the last message being sent, so next button press will set it
-	@		again.
-	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
-	@ Regiser (THR) is empty
 	MOV R3, #SET_UART_IER
 	STR R3, [uart4Base, #UART_IER]
 	
@@ -171,7 +161,7 @@ END_SVC:
 	MOV R3, #0x1
 	STR R3, [intcBase, #INTC_CONTROL]	
 
-	LDMFD SP!, {R0-R12, LR}
+	LDMFD SP!, {R3-R5, R8-R10, LR}
 	SUBS PC, LR, #0x4
 .end
 @****************** EOF ****************

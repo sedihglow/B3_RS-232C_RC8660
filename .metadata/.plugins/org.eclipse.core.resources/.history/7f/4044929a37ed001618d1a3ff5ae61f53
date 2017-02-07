@@ -1,0 +1,69 @@
+@ filename: init_pinMapping.s
+@
+@ Map the required pins to the appropriate modes for UART4 on P8 and P9
+@
+@ Written by: James Ross
+
+.text
+.global _init_pinMap
+_init_pinMap:
+@ Control Module registers for pin maps
+.equ CTLMOD_BASE, 	    0x44E10000 @ control module	 		    Base Address
+.equ UART4_CTSN_PADREG, 0x8D0	   @ conf_lcd_data12, P8 pin35	register offset
+.equ UART4_RTSN_PADREG, 0x8D4 	   @ conf_lcd_data13, P8 pin33  register offset
+.equ UART4_RXD_PADREG,  0x870  	   @ conf_gpmc_wait0, P8 pin11  register offset
+.equ UART4_TXD_PADREG,	0x874  	   @ conf_gpmc_wpn,   P8 pin13	register offset
+.equ SET_MODE6,			0x6		   @ mux mode 6					Mask
+.equ CLEAR_LOW3,		0xFFFFFFF8 @ AND to clear lower 3 bits  Mask
+
+@ Register assignment defintions
+controlBase 	 .req R10
+clearLowBitsFlag .req R9
+setMode6 		 .req R8	
+
+@********************** START _init_pinMap *************************************
+	STMFD SP!, {R3-R5, R8-R10,LR}
+
+	LDR controlBase, =CTLMOD_BASE @ Set base address for reference
+	MOV clearLowBitsFlag, #CLEAR_LOW3	@ Mask to clear lower 3 bits
+	MOV setMode6, #SET_MODE6  @ Mask to set to mode 6
+
+SET_CTSN:	
+	ADD R3, controlBase, #UART4_CTSN_PADREG @ Go to CTSN pad register
+	@ Clear lower 3 bits
+	LDR R5, [R3] 				 @ Load CTSN pad register
+	AND R5, R5, clearLowBitsFlag @ Clear lower 3 bits
+	@ Set bits to mode 6	
+	ORR R5, R5, setMode6		 @ Set lower 3 bits to 110
+	STR R5, [R3]		    	 @ Store back into CTSN pad register
+	
+SET_RTSN:
+	LDR R4, =UART4_RTSN_PADREG
+	ADD R4, controlBase, R4		 @ Go to RTSN pad register
+	@ Clear lower 3 bits
+	LDR R5, [R3] 				 @ Load RTSN pad register
+	AND R5, R5, clearLowBitsFlag @ Clear lower 3 bits
+	@ Set bits to mode 6	
+	ORR R5, R5, setMode6		 @ Set lower 3 bits to 110
+	STR R5, [R3]		    	 @ Store back into RTSN pad register
+SET_TXD:
+	LDR R4, =UART4_TXD_PADREG
+	ADD R3, controlBase, R4 	 @ Go to TXD pad register
+	@ Clear lower 3 bits
+	LDR R5, [R3] 				 @ Load TXD pad register
+	AND R5, R5, clearLowBitsFlag @ Clear lower 3 bits
+	@ Set bits to mode 6	
+	ORR R5, R5, setMode6		 @ Set lower 3 bits to 110
+	STR R5, [R3]		    	 @ Store back into TXD pad register
+SET_RXD:
+	ADD R3, controlBase, #UART4_RXD_PADREG @ Go to RXD pad register
+	@ Clear lower 3 bits
+	LDR R5, [R3] 				 @ Load RXD pad register
+	AND R5, R5, clearLowBitsFlag @ Clear lower 3 bits
+	@ Set bits to mode 6	
+	ORR R5, R5, setMode6		 @ Set lower 3 bits to 110
+	STR R5, [R3]		    	 @ Store back into RXD pad register
+
+	LDMFD SP!, {R0-R10,PC}
+.end
+@********************** EOF ***********************

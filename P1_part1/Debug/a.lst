@@ -91,72 +91,75 @@ ARM GAS  ../main_p1_part1.s 			page 1
   85 0010 01DA8DE2 		ADD SP, SP, #0x1000
   86 0014 130002F1 		CPS #0x13			@ Switch back to SVC mode
   87              		
-  88              	
-  89              	INIT_PIN_MAP:
-  90 0018 FEFFFFEB 		BL _init_pinMap
-  91              		
-  92              	INIT_CLOCKS:
-  93 001c FEFFFFEB 		BL _init_clocks
-  94              		
-  95              	INIT_GPIO:
-  96 0020 FEFFFFEB 		BL _init_gpio
-  97              	
-  98              	INIT_UART4:
-  99 0024 FEFFFFEB 		BL _init_uart4
- 100              		
- 101              	INIT_8660:
- 102 0028 FEFFFFEB 		BL _init_syth_8660
- 103              		
- 104              	@INIT_TIMER3:
- 105              	@		_init_timer3
- 106              		
- 107              	INIT_INTERRUPT:
- 108 002c FEFFFFEB 		BL _init_interrupt
- 109              	
- 110              	WAIT_LOOP:
- 111 0030 FEFFFFEA 		B WAIT_LOOP
- 112              	
- 113              	.data
- 114              	.align 4
+  88              	INIT_PIN_MAP:
+  89 0018 FEFFFFEB 		BL _init_pinMap
+  90              		
+  91              	INIT_CLOCKS:
+  92 001c FEFFFFEB 		BL _init_clocks
+  93              	
+  94              	INIT_UART4:
+  95 0020 FEFFFFEB 		BL _init_uart4
+  96              		
+  97              	INIT_8660:
+  98 0024 FEFFFFEB 		BL _init_syth_8660
+  99              		
+ 100              	INIT_INTERRUPT:
+ 101 0028 FEFFFFEB 		BL _init_interrupt
+ 102              	
+ 103              	INIT_GPIO:
+ 104 002c FEFFFFEB 		BL _init_gpio
+ 105              		
+ 106              	WAIT_LOOP:
+ 107 0030 FEFFFFEA 		B WAIT_LOOP
+ 108              	
+ 109              	.data
+ 110              	.align 4
+ 111              		SVC_STACK:
+ 112              			.rept 1024
+ 113              				.word 0x0000
+ 114 0000 00000000 			.endr
 ARM GAS  ../main_p1_part1.s 			page 3
 
 
- 115              		SVC_STACK:
+ 114      00000000 
+ 114      00000000 
+ 114      00000000 
+ 114      00000000 
+ 115              		IRQ_STACK:
  116              			.rept 1024
  117              				.word 0x0000
- 118 0000 00000000 			.endr
+ 118 1000 00000000 			.endr
  118      00000000 
  118      00000000 
  118      00000000 
  118      00000000 
- 119              		IRQ_STACK:
- 120              			.rept 1024
- 121              				.word 0x0000
- 122 1000 00000000 			.endr
- 122      00000000 
- 122      00000000 
- 122      00000000 
- 122      00000000 
- 123              	.align 4
- 124              		MESSAGE:
- 125 2000 54686973 			.ascii "This shit better fucking work."
- 125      20736869 
- 125      74206265 
- 125      74746572 
- 125      20667563 
- 126 201e 0D       			.byte 0x0D
- 127 201f 00       	.align 4
- 128              		CHAR_PTR:
- 129 2020 00000000 			.word MESSAGE
- 130 2024 00000000 	.end
- 130      00000000 
- 130      00000000 
+ 119              	.align 4
+ 120              		MESSAGE:
+ 121 2000 01       			.byte 0x01   @ Start voice setting
+ 122 2001 374F     			.ascii "7O"  @ Voice of
+ 123 2003 01       			.byte 0x01   @ Start of volume setting
+ 124 2004 3056     			.ascii "0V"	 @ Set volume  of 9
+ 125 2006 01       			.byte 0x1
+ 126 2007 3453     			.ascii "4S"
+ 127 2009 546F2074 			.ascii "To the point."
+ 127      68652070 
+ 127      6F696E74 
+ 127      2E
+ 128 2016 0D       			.byte 0x0D
+ 129 2017 00000000 	.align 4
+ 129      00000000 
+ 129      00
+ 130              		CHAR_PTR:
+ 131 2020 00000000 			.word MESSAGE
+ 132 2024 00000000 	.end
+ 132      00000000 
+ 132      00000000 
 ARM GAS  ../main_p1_part1.s 			page 4
 
 
 DEFINED SYMBOLS
-  ../main_p1_part1.s:124    .data:00002000 MESSAGE
-  ../main_p1_part1.s:128    .data:00002020 CHAR_PTR
+  ../main_p1_part1.s:120    .data:00002000 MESSAGE
+  ../main_p1_part1.s:130    .data:00002020 CHAR_PTR
   ../main_p1_part1.s:12     .text:00000000 _start
   ../main_p1_part1.s:15     *ABS*:44e00000 CM_PER_BASE
   ../main_p1_part1.s:16     *ABS*:00000002 CLK_EN
@@ -206,27 +209,27 @@ DEFINED SYMBOLS
   ../main_p1_part1.s:72     *ABS*:00000874 UART4_TXD_PADREG
   ../main_p1_part1.s:73     *ABS*:00000006 SET_MODE6
   ../main_p1_part1.s:79     .text:00000000 INIT_STACK
-  ../main_p1_part1.s:115    .data:00000000 SVC_STACK
+  ../main_p1_part1.s:111    .data:00000000 SVC_STACK
   ../main_p1_part1.s:80     .text:00000000 $a
-  ../main_p1_part1.s:119    .data:00001000 IRQ_STACK
-  ../main_p1_part1.s:89     .text:00000018 INIT_PIN_MAP
-  ../main_p1_part1.s:92     .text:0000001c INIT_CLOCKS
+  ../main_p1_part1.s:115    .data:00001000 IRQ_STACK
+  ../main_p1_part1.s:88     .text:00000018 INIT_PIN_MAP
+  ../main_p1_part1.s:91     .text:0000001c INIT_CLOCKS
 ARM GAS  ../main_p1_part1.s 			page 5
 
 
-  ../main_p1_part1.s:95     .text:00000020 INIT_GPIO
-  ../main_p1_part1.s:98     .text:00000024 INIT_UART4
-  ../main_p1_part1.s:101    .text:00000028 INIT_8660
-  ../main_p1_part1.s:107    .text:0000002c INIT_INTERRUPT
-  ../main_p1_part1.s:110    .text:00000030 WAIT_LOOP
-  ../main_p1_part1.s:114    .data:00000000 $d
-  ../main_p1_part1.s:113    .text:00000034 $d
+  ../main_p1_part1.s:94     .text:00000020 INIT_UART4
+  ../main_p1_part1.s:97     .text:00000024 INIT_8660
+  ../main_p1_part1.s:100    .text:00000028 INIT_INTERRUPT
+  ../main_p1_part1.s:103    .text:0000002c INIT_GPIO
+  ../main_p1_part1.s:106    .text:00000030 WAIT_LOOP
+  ../main_p1_part1.s:110    .data:00000000 $d
+  ../main_p1_part1.s:109    .text:00000034 $d
                    .debug_aranges:0000000c $d
 
 UNDEFINED SYMBOLS
 _init_pinMap
 _init_clocks
-_init_gpio
 _init_uart4
 _init_syth_8660
 _init_interrupt
+_init_gpio
