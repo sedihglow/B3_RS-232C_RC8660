@@ -13,217 +13,99 @@ ARM GAS  ../main_p1_part1.s 			page 1
   10              	.global CHAR_PTR
   11              	.global _start
   12              	_start:
-  13              	@********************** EQU DEFINITIONS ****************************************
-  14              	@ CLK definitions
-  15              	.equ CM_PER_BASE,      0x44E00000   @ CM_PER base register
-  16              	.equ CLK_EN, 		   0x00000002   @ Sets IDLEST functional, Module mode EN
-  17              	.equ GPIO1_CLK_CTRL,   0x44E000AC   @ CM_PER_GPIO1_CLKCTRL  register address
-  18              	.equ TIMER3_CLK_CTRL,  0x44E00084  @ CM_PER_TIMER3_CLKCTRL register address
-  19              	.equ TIMER3_CLKSEL,    0x44E0050C  @ CLKSEL_TIMER3_CLK     register address
-  20              	.equ UART4_CLK_CTRL,   0x78        @ CM_PER_UART_CLKCTRL   register offset
-  21              	
-  22              	@ GPIO definitions
-  23              	.equ GPIO1_BASE,          0x4804C000  @ GPIO1               Base Address
-  24              	.equ GPIO_OE,             0x134       @ GPIO_OE             register offset
-  25              	.equ GPIO_CLEAR_DATAOUT,  0x190       @ GPIO_CLEARDATAOUT   register offset
-  26              	.equ GPIO_SET_DATAOUT,    0x194       @ GPIO_SETDATAOUT     register offset
-  27              	.equ GPIO_FALLING_DETECT, 0x14C       @ GPIO_FALLINGDETECT  register offset
-  28              	.equ GPIO_IRQSTAT0,       0x2C        @ GPIO_IRQSTATUS_0    register offset
-  29              	.equ GPIO_IRQSTAT_SET0,   0x34        @ GPIO_IRQSTAT_SET_0  register offset
-  30              	
-  31              	@ Interupt definitions
-  32              	.equ INTC_BASE,           0x48200000  @ INCPS               Base Address
-  33              	.equ INTC_CONTROL,        0x48        @ INTC_CONTROL        register offset
-  34              	.equ INTC_CONFIG,         0x10        @ INTC_SYSCONFIG      register offset
-  35              	.equ INTC_MIR_CLEAR2,     0xC8        @ INTC_MIR_CLEAR2     register offset
-  36              	.equ INTC_MIR_CLEAR3,     0xE8        @ INTC_MIR_CLEAR3     register offset
-  37              	.equ INTC_MIR_SET3,       0xEC        @ INTC_MIR_SET3       register offset
-  38              	.equ INTC_PENDING_IRQ3,   0xF8        @ INTC_PENDING_IRQ3   register offset
-  39              	.equ GPIOINT1A,           0x4         @ GPIOINT1A in MIR3   Mask
-  40              	.equ TINT3,               0x20        @ TINT3 in MIR2       Mask
-  41              	
-  42              	@ Timer defintions
-  43              	.equ TIMER3_BASE,         0x48042000  @ DMTIMER3            Base Address
-  44              	.equ TIMER_TIOCP_CFG,     0x10        @ TIOCP_CFG           register offset
-  45              	.equ TIMER_IRQEN_SET,     0x2C        @ IRQENABLE_SET       register offset
-  46              	.equ TIMER_TCLR,          0x38        @ TCLR                register offset
-  47              	.equ TIMER_TCRR,          0x3C        @ TCRR                register offset
-  48              	.equ TIMER_TLDR,          0x40        @ TLDR                register offset
-  49              	.equ TIMER_COUNTER_VAL,   0xFFFF80FF  @ Loaded into TLDR and TCRR, 1.00793s
-  50              	  
-  51              	@ UART definitions
-  52              	.equ UART4_BASE,   0x481A8000 @ UART4          	   	  Base Address
-  53              	.equ UART_LCR,     0xC		  @ Line Ctrl 			  register offset
-  54              	.equ UART_DLH,     0x04	 	  @ DLH div latch high    register offset 
-  55              	.equ UART_TXHR,	   0x0	  	  @ THR Transmit Holding  register offset
-  56              	.equ UART_DLL,     0x0		  @ DLL div latch low     register offset
-  57              	.equ UART_FCR,     0x8	  	  @ FIFO control		  register offset
+  13              	@********************** START _start *******************************************
+  14              	INIT_STACK:
+  15 0000 2CD09FE5 		LDR SP, =SVC_STACK
+  16 0004 01DA8DE2 		ADD SP, SP, #0x1000 @ point to top of stack
+  17 0008 120002F1 		CPS #0x12			@ Switch to IRQ mode
+  18              		
+  19 000c 24D09FE5 		LDR SP, =IRQ_STACK
+  20 0010 01DA8DE2 		ADD SP, SP, #0x1000
+  21 0014 130002F1 		CPS #0x13			@ Switch back to SVC mode
+  22              		
+  23              	INIT_PIN_MAP:
+  24 0018 FEFFFFEB 		BL _init_pinMap
+  25              		
+  26              	INIT_CLOCKS:
+  27 001c FEFFFFEB 		BL _init_clocks
+  28              	
+  29              	INIT_UART4:
+  30 0020 FEFFFFEB 		BL _init_uart4
+  31              		
+  32              	INIT_8660:
+  33 0024 FEFFFFEB 		BL _init_syth_8660
+  34              		
+  35              	INIT_INTERRUPT:
+  36 0028 FEFFFFEB 		BL _init_interrupt
+  37              	
+  38              	INIT_GPIO:
+  39 002c FEFFFFEB 		BL _init_gpio
+  40              		
+  41              	WAIT_LOOP:
+  42 0030 FEFFFFEA 		B WAIT_LOOP
+  43              	
+  44              	.data
+  45              	.align 4
+  46              		SVC_STACK:
+  47              			.rept 1024
+  48              				.word 0x0000
+  49 0000 00000000 			.endr
+  49      00000000 
+  49      00000000 
+  49      00000000 
+  49      00000000 
+  50              		IRQ_STACK:
+  51              			.rept 1024
+  52              				.word 0x0000
+  53 1000 00000000 			.endr
 ARM GAS  ../main_p1_part1.s 			page 2
 
 
-  58              	.equ MODEM_CTRL,   0x10 	  @ Moden CTRL 		 	  register offset
-  59              	.equ UART_IIR,     0x8	 	  @ Interrupt ID		  register offset
-  60              	.equ UART_IER,     0x4	 	  @ IER_UART, Int EN      register offset
-  61              	.equ SET_UART_IER, 0x000A  	  @ THRIT,MODEMSTIT 16bit register offset
-  62              	
-  63              	@ LED definitions
-  64              	.equ SET_LED1_OUTPUT, 0xFFBFFFFF      @ Mask to set GPIO1_22 as output
-  65              	.equ SET_LED1,    	  0x00400000      @ Mask to set LED1, GPIO1_22
-  66              	
-  67              	@ Control Module registers for pin maps
-  68              	.equ CRLMOD_BASE, 	    0x44E10000 @ control module	 		    Base Address
-  69              	.equ UART4_CTSN_PADREG, 0x8D0	   @ conf_lcd_data12, P8 pin35	register offset
-  70              	.equ UART4_RTSN_PADREG, 0x8D4 	   @ conf_lcd_data13, P8 pin33  register offset
-  71              	.equ UART4_RXD_PADREG,  0x870  	   @ conf_gpmc_wait0, P8 pin11  register offset
-  72              	.equ UART4_TXD_PADREG,	0x874  	   @ conf_gpmc_wpn,   P8 pin13	register offset
-  73              	.equ SET_MODE6,			0x6		   @ mux mode 6					Mask
-  74              	
-  75              	@ register assignments
-  76              	
-  77              	@********************** START _start *******************************************
-  78              	
-  79              	INIT_STACK:
-  80 0000 2CD09FE5 		LDR SP, =SVC_STACK
-  81 0004 01DA8DE2 		ADD SP, SP, #0x1000 @ point to top of stack
-  82 0008 120002F1 		CPS #0x12			@ Switch to IRQ mode
-  83              		
-  84 000c 24D09FE5 		LDR SP, =IRQ_STACK
-  85 0010 01DA8DE2 		ADD SP, SP, #0x1000
-  86 0014 130002F1 		CPS #0x13			@ Switch back to SVC mode
-  87              		
-  88              	INIT_PIN_MAP:
-  89 0018 FEFFFFEB 		BL _init_pinMap
-  90              		
-  91              	INIT_CLOCKS:
-  92 001c FEFFFFEB 		BL _init_clocks
-  93              	
-  94              	INIT_UART4:
-  95 0020 FEFFFFEB 		BL _init_uart4
-  96              		
-  97              	INIT_8660:
-  98 0024 FEFFFFEB 		BL _init_syth_8660
-  99              		
- 100              	INIT_INTERRUPT:
- 101 0028 FEFFFFEB 		BL _init_interrupt
- 102              	
- 103              	INIT_GPIO:
- 104 002c FEFFFFEB 		BL _init_gpio
- 105              		
- 106              	WAIT_LOOP:
- 107 0030 FEFFFFEA 		B WAIT_LOOP
- 108              	
- 109              	.data
- 110              	.align 4
- 111              		SVC_STACK:
- 112              			.rept 1024
- 113              				.word 0x0000
- 114 0000 00000000 			.endr
+  53      00000000 
+  53      00000000 
+  53      00000000 
+  53      00000000 
+  54              	.align 4
+  55              		MESSAGE:
+  56 2000 01       			.byte 0x01   @ Start voice setting
+  57 2001 374F     			.ascii "7O"  @ Voice of Robo Robert
+  58 2003 01       			.byte 0x01   @ Start of volume setting
+  59 2004 3056     			.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
+  60 2006 01       			.byte 0x1
+  61 2007 3453     			.ascii "4S"
+  62 2009 546F2074 			.ascii "To the point."
+  62      68652070 
+  62      6F696E74 
+  62      2E
+  63 2016 0D       			.byte 0x0D
+  64 2017 00000000 	.align 4
+  64      00000000 
+  64      00
+  65              		CHAR_PTR:
+  66 2020 00000000 			.word MESSAGE
+  67 2024 00000000 	.end
+  67      00000000 
+  67      00000000 
 ARM GAS  ../main_p1_part1.s 			page 3
 
 
- 114      00000000 
- 114      00000000 
- 114      00000000 
- 114      00000000 
- 115              		IRQ_STACK:
- 116              			.rept 1024
- 117              				.word 0x0000
- 118 1000 00000000 			.endr
- 118      00000000 
- 118      00000000 
- 118      00000000 
- 118      00000000 
- 119              	.align 4
- 120              		MESSAGE:
- 121 2000 01       			.byte 0x01   @ Start voice setting
- 122 2001 374F     			.ascii "7O"  @ Voice of
- 123 2003 01       			.byte 0x01   @ Start of volume setting
- 124 2004 3056     			.ascii "0V"	 @ Set volume  of 9
- 125 2006 01       			.byte 0x1
- 126 2007 3453     			.ascii "4S"
- 127 2009 546F2074 			.ascii "To the point."
- 127      68652070 
- 127      6F696E74 
- 127      2E
- 128 2016 0D       			.byte 0x0D
- 129 2017 00000000 	.align 4
- 129      00000000 
- 129      00
- 130              		CHAR_PTR:
- 131 2020 00000000 			.word MESSAGE
- 132 2024 00000000 	.end
- 132      00000000 
- 132      00000000 
-ARM GAS  ../main_p1_part1.s 			page 4
-
-
 DEFINED SYMBOLS
-  ../main_p1_part1.s:120    .data:00002000 MESSAGE
-  ../main_p1_part1.s:130    .data:00002020 CHAR_PTR
+  ../main_p1_part1.s:55     .data:00002000 MESSAGE
+  ../main_p1_part1.s:65     .data:00002020 CHAR_PTR
   ../main_p1_part1.s:12     .text:00000000 _start
-  ../main_p1_part1.s:15     *ABS*:44e00000 CM_PER_BASE
-  ../main_p1_part1.s:16     *ABS*:00000002 CLK_EN
-  ../main_p1_part1.s:17     *ABS*:44e000ac GPIO1_CLK_CTRL
-  ../main_p1_part1.s:18     *ABS*:44e00084 TIMER3_CLK_CTRL
-  ../main_p1_part1.s:19     *ABS*:44e0050c TIMER3_CLKSEL
-  ../main_p1_part1.s:20     *ABS*:00000078 UART4_CLK_CTRL
-  ../main_p1_part1.s:23     *ABS*:4804c000 GPIO1_BASE
-  ../main_p1_part1.s:24     *ABS*:00000134 GPIO_OE
-  ../main_p1_part1.s:25     *ABS*:00000190 GPIO_CLEAR_DATAOUT
-  ../main_p1_part1.s:26     *ABS*:00000194 GPIO_SET_DATAOUT
-  ../main_p1_part1.s:27     *ABS*:0000014c GPIO_FALLING_DETECT
-  ../main_p1_part1.s:28     *ABS*:0000002c GPIO_IRQSTAT0
-  ../main_p1_part1.s:29     *ABS*:00000034 GPIO_IRQSTAT_SET0
-  ../main_p1_part1.s:32     *ABS*:48200000 INTC_BASE
-  ../main_p1_part1.s:33     *ABS*:00000048 INTC_CONTROL
-  ../main_p1_part1.s:34     *ABS*:00000010 INTC_CONFIG
-  ../main_p1_part1.s:35     *ABS*:000000c8 INTC_MIR_CLEAR2
-  ../main_p1_part1.s:36     *ABS*:000000e8 INTC_MIR_CLEAR3
-  ../main_p1_part1.s:37     *ABS*:000000ec INTC_MIR_SET3
-  ../main_p1_part1.s:38     *ABS*:000000f8 INTC_PENDING_IRQ3
-  ../main_p1_part1.s:39     *ABS*:00000004 GPIOINT1A
-  ../main_p1_part1.s:40     *ABS*:00000020 TINT3
-  ../main_p1_part1.s:43     *ABS*:48042000 TIMER3_BASE
-  ../main_p1_part1.s:44     *ABS*:00000010 TIMER_TIOCP_CFG
-  ../main_p1_part1.s:45     *ABS*:0000002c TIMER_IRQEN_SET
-  ../main_p1_part1.s:46     *ABS*:00000038 TIMER_TCLR
-  ../main_p1_part1.s:47     *ABS*:0000003c TIMER_TCRR
-  ../main_p1_part1.s:48     *ABS*:00000040 TIMER_TLDR
-  ../main_p1_part1.s:49     *ABS*:ffff80ff TIMER_COUNTER_VAL
-  ../main_p1_part1.s:52     *ABS*:481a8000 UART4_BASE
-  ../main_p1_part1.s:53     *ABS*:0000000c UART_LCR
-  ../main_p1_part1.s:54     *ABS*:00000004 UART_DLH
-  ../main_p1_part1.s:55     *ABS*:00000000 UART_TXHR
-  ../main_p1_part1.s:56     *ABS*:00000000 UART_DLL
-  ../main_p1_part1.s:57     *ABS*:00000008 UART_FCR
-  ../main_p1_part1.s:58     *ABS*:00000010 MODEM_CTRL
-  ../main_p1_part1.s:59     *ABS*:00000008 UART_IIR
-  ../main_p1_part1.s:60     *ABS*:00000004 UART_IER
-  ../main_p1_part1.s:61     *ABS*:0000000a SET_UART_IER
-  ../main_p1_part1.s:64     *ABS*:ffbfffff SET_LED1_OUTPUT
-  ../main_p1_part1.s:65     *ABS*:00400000 SET_LED1
-  ../main_p1_part1.s:68     *ABS*:44e10000 CRLMOD_BASE
-  ../main_p1_part1.s:69     *ABS*:000008d0 UART4_CTSN_PADREG
-  ../main_p1_part1.s:70     *ABS*:000008d4 UART4_RTSN_PADREG
-  ../main_p1_part1.s:71     *ABS*:00000870 UART4_RXD_PADREG
-  ../main_p1_part1.s:72     *ABS*:00000874 UART4_TXD_PADREG
-  ../main_p1_part1.s:73     *ABS*:00000006 SET_MODE6
-  ../main_p1_part1.s:79     .text:00000000 INIT_STACK
-  ../main_p1_part1.s:111    .data:00000000 SVC_STACK
-  ../main_p1_part1.s:80     .text:00000000 $a
-  ../main_p1_part1.s:115    .data:00001000 IRQ_STACK
-  ../main_p1_part1.s:88     .text:00000018 INIT_PIN_MAP
-  ../main_p1_part1.s:91     .text:0000001c INIT_CLOCKS
-ARM GAS  ../main_p1_part1.s 			page 5
-
-
-  ../main_p1_part1.s:94     .text:00000020 INIT_UART4
-  ../main_p1_part1.s:97     .text:00000024 INIT_8660
-  ../main_p1_part1.s:100    .text:00000028 INIT_INTERRUPT
-  ../main_p1_part1.s:103    .text:0000002c INIT_GPIO
-  ../main_p1_part1.s:106    .text:00000030 WAIT_LOOP
-  ../main_p1_part1.s:110    .data:00000000 $d
-  ../main_p1_part1.s:109    .text:00000034 $d
+  ../main_p1_part1.s:14     .text:00000000 INIT_STACK
+  ../main_p1_part1.s:46     .data:00000000 SVC_STACK
+  ../main_p1_part1.s:15     .text:00000000 $a
+  ../main_p1_part1.s:50     .data:00001000 IRQ_STACK
+  ../main_p1_part1.s:23     .text:00000018 INIT_PIN_MAP
+  ../main_p1_part1.s:26     .text:0000001c INIT_CLOCKS
+  ../main_p1_part1.s:29     .text:00000020 INIT_UART4
+  ../main_p1_part1.s:32     .text:00000024 INIT_8660
+  ../main_p1_part1.s:35     .text:00000028 INIT_INTERRUPT
+  ../main_p1_part1.s:38     .text:0000002c INIT_GPIO
+  ../main_p1_part1.s:41     .text:00000030 WAIT_LOOP
+  ../main_p1_part1.s:45     .data:00000000 $d
+  ../main_p1_part1.s:44     .text:00000034 $d
                    .debug_aranges:0000000c $d
 
 UNDEFINED SYMBOLS

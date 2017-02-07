@@ -18,12 +18,10 @@ LOAD ./init_gpio.o
 LOAD ./init_interrupt.o
 LOAD ./init_pinMapping.o
 LOAD ./init_syth_8660.o
-LOAD ./init_timer3.o
 LOAD ./init_uart4.o
 LOAD ./int_director.o
 LOAD ./main_p1_part1.o
 LOAD ./startup_ARMCA8.o
-LOAD ./toggleLED.o
 
 .rsthand        0x80000000       0x70
                 0x80000000                . = ALIGN (0x10000)
@@ -36,7 +34,7 @@ LOAD ./toggleLED.o
                 0x80000050                Entry
                 0x80000070                . = ALIGN (0x4)
 
-.text           0x80000070      0x2d0
+.text           0x80000070      0x2b4
  *(.text*)
  .text          0x80000070       0x20 ./init_clocks.o
                 0x80000070                _init_clocks
@@ -48,16 +46,12 @@ LOAD ./toggleLED.o
                 0x80000100                _init_pinMap
  .text          0x80000178       0x18 ./init_syth_8660.o
                 0x80000178                _init_syth_8660
- .text          0x80000190        0x0 ./init_timer3.o
-                0x80000190                _init_timer3
  .text          0x80000190       0x3c ./init_uart4.o
                 0x80000190                _init_uart4
  .text          0x800001cc      0x11c ./int_director.o
                 0x800001cc                _int_director
  .text          0x800002e8       0x3c ./main_p1_part1.o
                 0x800002e8                _start
- .text          0x80000324       0x1c ./toggleLED.o
-                0x80000324                _toggleLED
  *(.init)
  *(.fini)
  *crtbegin.o(.ctors)
@@ -73,111 +67,107 @@ LOAD ./toggleLED.o
  *(.rodata*)
  *(.eh_frame*)
 
-.glue_7         0x80000340        0x0
+.glue_7         0x80000324        0x0
  .glue_7        0x00000000        0x0 linker stubs
 
-.glue_7t        0x80000340        0x0
+.glue_7t        0x80000324        0x0
  .glue_7t       0x00000000        0x0 linker stubs
 
-.vfp11_veneer   0x80000340        0x0
+.vfp11_veneer   0x80000324        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x80000340        0x0
+.v4_bx          0x80000324        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
-.iplt           0x80000340        0x0
+.iplt           0x80000324        0x0
  .iplt          0x00000000        0x0 ./init_clocks.o
 
-.rel.dyn        0x80000340        0x0
+.rel.dyn        0x80000324        0x0
  .rel.iplt      0x00000000        0x0 ./init_clocks.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x80000340                __exidx_start = .
+                0x80000324                __exidx_start = .
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x80000340                __exidx_end = .
+                0x80000324                __exidx_end = .
 
-.data           0x80000340     0x2030
-                0x80000340                . = ALIGN (0x4)
-                0x80000340                __data_start__ = .
+.data           0x80000330     0x2030
+                0x80000330                . = ALIGN (0x4)
+                0x80000330                __data_start__ = .
  *(vtable)
  *(.data*)
- .data          0x80000340        0x0 ./init_clocks.o
- .data          0x80000340        0x0 ./init_gpio.o
- .data          0x80000340        0x0 ./init_interrupt.o
- .data          0x80000340        0x0 ./init_pinMapping.o
- .data          0x80000340        0x0 ./init_syth_8660.o
- .data          0x80000340        0x0 ./init_timer3.o
- .data          0x80000340        0x0 ./init_uart4.o
- .data          0x80000340        0x0 ./int_director.o
- .data          0x80000340     0x2030 ./main_p1_part1.o
-                0x80002340                MESSAGE
-                0x80002360                CHAR_PTR
- .data          0x80002370        0x0 ./startup_ARMCA8.o
- .data          0x80002370        0x0 ./toggleLED.o
-                0x80002370                . = ALIGN (0x4)
-                0x80002370                PROVIDE (__preinit_array_start, .)
+ .data          0x80000330        0x0 ./init_clocks.o
+ .data          0x80000330        0x0 ./init_gpio.o
+ .data          0x80000330        0x0 ./init_interrupt.o
+ .data          0x80000330        0x0 ./init_pinMapping.o
+ .data          0x80000330        0x0 ./init_syth_8660.o
+ .data          0x80000330        0x0 ./init_uart4.o
+ .data          0x80000330        0x0 ./int_director.o
+ .data          0x80000330     0x2030 ./main_p1_part1.o
+                0x80002330                MESSAGE
+                0x80002350                CHAR_PTR
+ .data          0x80002360        0x0 ./startup_ARMCA8.o
+                0x80002360                . = ALIGN (0x4)
+                0x80002360                PROVIDE (__preinit_array_start, .)
  *(.preinit_array)
-                0x80002370                PROVIDE (__preinit_array_end, .)
-                0x80002370                . = ALIGN (0x4)
-                0x80002370                PROVIDE (__init_array_start, .)
+                0x80002360                PROVIDE (__preinit_array_end, .)
+                0x80002360                . = ALIGN (0x4)
+                0x80002360                PROVIDE (__init_array_start, .)
  *(SORT(.init_array.*))
  *(.init_array)
-                0x80002370                PROVIDE (__init_array_end, .)
-                0x80002370                . = ALIGN (0x4)
-                0x80002370                PROVIDE (__fini_array_start, .)
+                0x80002360                PROVIDE (__init_array_end, .)
+                0x80002360                . = ALIGN (0x4)
+                0x80002360                PROVIDE (__fini_array_start, .)
  *(SORT(.fini_array.*))
  *(.fini_array)
-                0x80002370                PROVIDE (__fini_array_end, .)
-                0x80002370                . = ALIGN (0x4)
-                0x80002370                __data_end__ = .
+                0x80002360                PROVIDE (__fini_array_end, .)
+                0x80002360                . = ALIGN (0x4)
+                0x80002360                __data_end__ = .
 
-.igot.plt       0x80002370        0x0
+.igot.plt       0x80002360        0x0
  .igot.plt      0x00000000        0x0 ./init_clocks.o
 
-.bss            0x80002370        0x0
-                0x80002370                . = ALIGN (0x4)
-                0x80002370                __bss_start__ = .
+.bss            0x80002360        0x0
+                0x80002360                . = ALIGN (0x4)
+                0x80002360                __bss_start__ = .
  *(.bss*)
- .bss           0x80002370        0x0 ./init_clocks.o
- .bss           0x80002370        0x0 ./init_gpio.o
- .bss           0x80002370        0x0 ./init_interrupt.o
- .bss           0x80002370        0x0 ./init_pinMapping.o
- .bss           0x80002370        0x0 ./init_syth_8660.o
- .bss           0x80002370        0x0 ./init_timer3.o
- .bss           0x80002370        0x0 ./init_uart4.o
- .bss           0x80002370        0x0 ./int_director.o
- .bss           0x80002370        0x0 ./main_p1_part1.o
- .bss           0x80002370        0x0 ./startup_ARMCA8.o
- .bss           0x80002370        0x0 ./toggleLED.o
+ .bss           0x80002360        0x0 ./init_clocks.o
+ .bss           0x80002360        0x0 ./init_gpio.o
+ .bss           0x80002360        0x0 ./init_interrupt.o
+ .bss           0x80002360        0x0 ./init_pinMapping.o
+ .bss           0x80002360        0x0 ./init_syth_8660.o
+ .bss           0x80002360        0x0 ./init_uart4.o
+ .bss           0x80002360        0x0 ./int_director.o
+ .bss           0x80002360        0x0 ./main_p1_part1.o
+ .bss           0x80002360        0x0 ./startup_ARMCA8.o
  *(COMMON)
-                0x80002370                __bss_end__ = .
+                0x80002360                __bss_end__ = .
 
-.heap           0x80002370      0x400
+.heap           0x80002360      0x400
  FILL mask 0xdeadbeef
-                0x80002370                . = ALIGN (0x4)
-                0x80002370                __end__ = .
-                0x80002370                end = __end__
-                0x80002370                __HeapBase = __end__
+                0x80002360                . = ALIGN (0x4)
+                0x80002360                __end__ = .
+                0x80002360                end = __end__
+                0x80002360                __HeapBase = __end__
  *(.heap*)
- .heap          0x80002370        0x0 ./startup_ARMCA8.o
-                0x80002770                . = (. + HEAPSIZE)
- *fill*         0x80002370      0x400 deadbeef
-                0x80002770                __HeapLimit = .
+ .heap          0x80002360        0x0 ./startup_ARMCA8.o
+                0x80002760                . = (. + HEAPSIZE)
+ *fill*         0x80002360      0x400 deadbeef
+                0x80002760                __HeapLimit = .
 
-.stack          0x80002770    0x18000
+.stack          0x80002760    0x18000
  FILL mask 0xbad0bad0
-                0x80002770                . = ALIGN (0x4)
-                0x80002770                __StackLimit = .
+                0x80002760                . = ALIGN (0x4)
+                0x80002760                __StackLimit = .
  *(.stack*)
- .stack         0x80002770        0x0 ./startup_ARMCA8.o
-                0x8001a770                . = (. + STACKSIZE)
- *fill*         0x80002770    0x18000 bad0bad0
-                0x8001a770                __StackTop = .
-                0x8001a770                __StackBase = .
-                0x8001a770                PROVIDE (__stack, __StackTop)
+ .stack         0x80002760        0x0 ./startup_ARMCA8.o
+                0x8001a760                . = (. + STACKSIZE)
+ *fill*         0x80002760    0x18000 bad0bad0
+                0x8001a760                __StackTop = .
+                0x8001a760                __StackBase = .
+                0x8001a760                PROVIDE (__stack, __StackTop)
 START GROUP
 LOAD c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib\libc.a
 LOAD c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4\libgcc.a
@@ -203,19 +193,15 @@ OUTPUT(P1_part1.out elf32-littlearm)
  .ARM.attributes
                 0x0000007c       0x1f ./init_syth_8660.o
  .ARM.attributes
-                0x0000009b       0x1f ./init_timer3.o
+                0x0000009b       0x1f ./init_uart4.o
  .ARM.attributes
-                0x000000ba       0x1f ./init_uart4.o
+                0x000000ba       0x1f ./int_director.o
  .ARM.attributes
-                0x000000d9       0x1f ./int_director.o
+                0x000000d9       0x1f ./main_p1_part1.o
  .ARM.attributes
-                0x000000f8       0x1f ./main_p1_part1.o
- .ARM.attributes
-                0x00000117       0x1f ./startup_ARMCA8.o
- .ARM.attributes
-                0x00000136       0x1f ./toggleLED.o
+                0x000000f8       0x1f ./startup_ARMCA8.o
 
-.debug_line     0x00000000      0x382
+.debug_line     0x00000000      0x33d
  .debug_line    0x00000000       0x49 ./init_clocks.o
  .debug_line    0x00000049       0x50 ./init_gpio.o
  .debug_line    0x00000099       0x4f ./init_interrupt.o
@@ -223,11 +209,10 @@ OUTPUT(P1_part1.out elf32-littlearm)
  .debug_line    0x0000014f       0x4a ./init_syth_8660.o
  .debug_line    0x00000199       0x4f ./init_uart4.o
  .debug_line    0x000001e8       0x92 ./int_director.o
- .debug_line    0x0000027a       0x53 ./main_p1_part1.o
- .debug_line    0x000002cd       0x71 ./startup_ARMCA8.o
- .debug_line    0x0000033e       0x44 ./toggleLED.o
+ .debug_line    0x0000027a       0x52 ./main_p1_part1.o
+ .debug_line    0x000002cc       0x71 ./startup_ARMCA8.o
 
-.debug_info     0x00000000      0x33b
+.debug_info     0x00000000      0x2eb
  .debug_info    0x00000000       0x52 ./init_clocks.o
  .debug_info    0x00000052       0x50 ./init_gpio.o
  .debug_info    0x000000a2       0x55 ./init_interrupt.o
@@ -237,9 +222,8 @@ OUTPUT(P1_part1.out elf32-littlearm)
  .debug_info    0x000001f3       0x53 ./int_director.o
  .debug_info    0x00000246       0x54 ./main_p1_part1.o
  .debug_info    0x0000029a       0x51 ./startup_ARMCA8.o
- .debug_info    0x000002eb       0x50 ./toggleLED.o
 
-.debug_abbrev   0x00000000       0xc6
+.debug_abbrev   0x00000000       0xb2
  .debug_abbrev  0x00000000       0x14 ./init_clocks.o
  .debug_abbrev  0x00000014       0x14 ./init_gpio.o
  .debug_abbrev  0x00000028       0x14 ./init_interrupt.o
@@ -249,9 +233,8 @@ OUTPUT(P1_part1.out elf32-littlearm)
  .debug_abbrev  0x00000078       0x14 ./int_director.o
  .debug_abbrev  0x0000008c       0x14 ./main_p1_part1.o
  .debug_abbrev  0x000000a0       0x12 ./startup_ARMCA8.o
- .debug_abbrev  0x000000b2       0x14 ./toggleLED.o
 
-.debug_aranges  0x00000000      0x148
+.debug_aranges  0x00000000      0x128
  .debug_aranges
                 0x00000000       0x20 ./init_clocks.o
  .debug_aranges
@@ -270,8 +253,6 @@ OUTPUT(P1_part1.out elf32-littlearm)
                 0x000000e0       0x20 ./main_p1_part1.o
  .debug_aranges
                 0x00000100       0x28 ./startup_ARMCA8.o
- .debug_aranges
-                0x00000128       0x20 ./toggleLED.o
 
 .debug_ranges   0x00000000       0x20
  .debug_ranges  0x00000000       0x20 ./startup_ARMCA8.o

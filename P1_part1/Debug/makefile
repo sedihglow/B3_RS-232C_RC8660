@@ -12,12 +12,10 @@ ORDERED_OBJS += \
 "./init_interrupt.o" \
 "./init_pinMapping.o" \
 "./init_syth_8660.o" \
-"./init_timer3.o" \
 "./init_uart4.o" \
 "./int_director.o" \
 "./main_p1_part1.o" \
 "./startup_ARMCA8.o" \
-"./toggleLED.o" \
 -Wl,-T"../AM335x.lds" \
 $(GEN_CMDS__FLAG) \
 -Wl,--start-group \
@@ -155,8 +153,8 @@ P1_part1.hex: $(EXE_OUTPUTS)
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
 	-$(RM) "startup_ARMCA8.d" 
-	-$(RM) "init_clocks.d" "init_gpio.d" "init_interrupt.d" "init_pinMapping.d" "init_syth_8660.d" "init_timer3.d" "init_uart4.d" "int_director.d" "main_p1_part1.d" "toggleLED.d" 
-	-$(RM) "init_clocks.o" "init_gpio.o" "init_interrupt.o" "init_pinMapping.o" "init_syth_8660.o" "init_timer3.o" "init_uart4.o" "int_director.o" "main_p1_part1.o" "startup_ARMCA8.o" "toggleLED.o" 
+	-$(RM) "init_clocks.d" "init_gpio.d" "init_interrupt.d" "init_pinMapping.d" "init_syth_8660.d" "init_uart4.d" "int_director.d" "main_p1_part1.d" 
+	-$(RM) "init_clocks.o" "init_gpio.o" "init_interrupt.o" "init_pinMapping.o" "init_syth_8660.o" "init_uart4.o" "int_director.o" "main_p1_part1.o" "startup_ARMCA8.o" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
