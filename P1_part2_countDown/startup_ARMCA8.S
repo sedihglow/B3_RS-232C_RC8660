@@ -148,7 +148,7 @@ __isr_vector:
      ldr     pc, [pc,#-8]       @ 0x0C Prefetch Abort
      ldr     pc, [pc,#-8]       @ 0x10 Data Abort
      ldr     pc, [pc,#-8]       @ 0x14 Not used
-     ldr     pc, [pc,#-8]       @ 0x18 IRQ interrupt
+     b 		 _int_director      @ 0x18 IRQ interrupt
      ldr     pc, [pc,#-8]       @ 0x1C FIQ interrupt
     .long    Entry
     .long    0

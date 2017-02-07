@@ -2,6 +2,17 @@
 **** Build of configuration Debug for project P1_part1 ****
 
 "c:\\ti\\ccsv6\\utils\\bin\\gmake" -k all 
-gmake: Nothing to be done for `all'.
+'Building file: ../main_p1_part1.s'
+'Invoking: GNU Compiler'
+"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -c -mcpu=cortex-a8 -mtune=cortex-a8 -march=armv7-a -marm -Dam3359 -I"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/arm-none-eabi/include" -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -MMD -MP -MF"main_p1_part1.d" -MT"main_p1_part1.d" -o"main_p1_part1.o"  "../main_p1_part1.s"
+../main_p1_part1.s: Assembler messages:
+../main_p1_part1.s: Warning: end of file in comment; newline inserted
+'Finished building: ../main_p1_part1.s'
+' '
+'Building target: P1_part1.out'
+'Invoking: GNU Linker'
+"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -Dam3359 -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -Wl,-Map,"P1_part1.map" -nostartfiles -Wl,--defsym,STACKSIZE=0x18000 -Wl,--defsym,HEAPSIZE=0x400 -o"P1_part1.out" "./init_clocks.o" "./init_gpio.o" "./init_interrupt.o" "./init_pinMapping.o" "./init_syth_8660.o" "./init_uart4.o" "./int_director.o" "./main_p1_part1.o" "./startup_ARMCA8.o" -Wl,-T"../AM335x.lds"  -Wl,--start-group -l"c" -l"gcc" -l"nosys" -Wl,--end-group 
+'Finished building target: P1_part1.out'
+' '
 
 **** Build Finished ****

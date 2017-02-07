@@ -1,0 +1,51 @@
+@ filename: init_timer3.s
+@
+@ This function initializes timer3 for 1second intervals
+@
+@ written by: James Ross
+
+.text
+.global _init_timer3
+_init_timer3:
+@ Timer defintions
+.equ TIMER3_BASE,         0x48042000  @ DMTIMER3            Base Address
+.equ TIMER_TIOCP_CFG,     0x10        @ TIOCP_CFG           register offset
+.equ TIMER_IRQEN_SET,     0x2C        @ IRQENABLE_SET       register offset
+.equ TIMER_TCLR,          0x38        @ TCLR                register offset
+.equ TIMER_TCRR,          0x3C        @ TCRR                register offset
+.equ TIMER_TLDR,          0x40        @ TLDR                register offset
+.equ TIMER_IRQEN_SET,     0x2C        @ IRQENABLE_SET       register offset
+.equ TIMER_COUNTER_VAL,   0xFFFF80FF  @ Loaded into TLDR and TCRR, 1.00793s
+
+.equ RESET_TCLR, 		  0x38		  @ resets TCL			Val
+.equ SW_RESET,			  0x01		  @ soft reset in CGF	Val
+.equ INT_EN,			  0x02		  @
+
+@ register assignment definitions
+timer3Base .req R10
+
+@********************* START _init_timer3 **************************************
+	STMFD SP!, {R1, R10, LR}
+	
+	LDR timer3Base, =TIMER3_BASE
+	
+	@ Turn off timer in-case state of beagle bone has it enabled
+	MOV R1, #RESET_TCLR
+	STR R1, [timer3Base, #TCLR] @ Set the TCLR
+	
+	@ Initialize timer3 registers. set count and overflow INT generation	
+	MOV R1, #SW_REST	 @ value for software reset in TIOCP_CFG
+	STR R1, [timer3Base, #TIOCP_CFG]
+	
+	@ Set count value in TLDR and TCRR
+	LDR R1, =TIMER_COUNTER_VAL
+	STR R1, [timer3Base, #TLDR]
+	STR R1, [timer3Base, #TCRR]
+	
+    @ Enable overflow interrupt
+	MOV R1, #INT_EN
+	STR R1, [timer3Base, #TIMER_IRQEN_SET]
+	
+	LDFDM SP!, {R1, R10, PC}
+.end
+@************* EOF ***************

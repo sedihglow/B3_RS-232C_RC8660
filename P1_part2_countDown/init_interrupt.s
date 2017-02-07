@@ -13,6 +13,7 @@ _init_interrupt:
 .equ INTC_MIR_CLEAR3,     0xE8        @ INTC_MIR_CLEAR3     register offset
 .equ GPIOINT1A,           0x4         @ GPIOINT1A in MIR3   Val
 .equ UART4INT,			  0x2000 	  @ UART4INT in MIR1	Val
+.equ TINT3,               0x20        @ TINT3 in MIR2       Val
 
 @ reg assignment definitions
 intcBase .req R10

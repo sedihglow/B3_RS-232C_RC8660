@@ -70,7 +70,7 @@ ARM GAS  ../main_p1_part1.s 			page 1
   56 2000 01       			.byte 0x01   @ Start voice setting
   57 2001 374F     			.ascii "7O"  @ Voice of Robo Robert
   58 2003 01       			.byte 0x01   @ Start of volume setting
-  59 2004 3056     			.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
+  59 2004 3956     			.ascii "9V"	 @ Set volume 0 of 9 (lowest setting, still loud)
   60 2006 01       			.byte 0x1
   61 2007 3453     			.ascii "4S"
   62 2009 546F2074 			.ascii "To the point."

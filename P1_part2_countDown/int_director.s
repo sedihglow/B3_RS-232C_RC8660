@@ -15,8 +15,11 @@ _int_director:
 .equ INTC_MIR_CLEAR3,     0xE8       @ INTC_MIR_CLEAR3     	  register offset
 .equ INTC_MIR_SET3,       0xEC       @ INTC_MIR_SET3       	  register offset
 .equ INTC_PENDING_IRQ1,	  0xB8		 @ INTC_PENDING_IRQ1	  register offset
+.equ INTC_PENDING_IRQ2,   0xD8		 @ INTC_PENDING_IRQ3      register offset
 .equ INTC_PENDING_IRQ3,   0xF8       @ INTC_PENDING_IRQ3      register offset
-.equ GPIOINT1A,           0x4        @ GPIOINT1A in MIR1/IPI3 Mask
+.equ GPIOINT1A,           0x4        @ GPIOINT1A in MIR1/IPI3 Val
+.equ TINT3,               0x20       @ TINT3 in MIR2       	  Val
+.equ UART4INT,			  0x2000     @ UART4INT in MIR1/IPI1  Val
 
 @ GPIO definitions
 .equ GPIO1_BASE,		  0x4804C000  @ GPIO1 				Base Address
@@ -34,11 +37,24 @@ _int_director:
 
 .equ CTS_CHECK, 		  0x10		 @ Bit 4 used in MSR	  Mask
 .equ THR_CHECK,			  0x20       @ Bit 5 used in LSR	  Mask
-.equ UART4INT,			  0x2000     @ UART4INT in MIR1/IPI1  Mask
 .equ THR_CLR,			  0xFFFD 	 @ And Clears bit1 in IER Mask
 .equ SET_UART_IER,  	  0x000A     @ THRIT,MODEMSTIT 16bit  Val
 
 .equ DELIM,				  0x0D		 @ Final character sent in a messege
+
+@ timer definitions
+.equ TIMER3_BASE,         0x48042000  @ DMTIMER3            Base Address
+.equ TIMER_TCRR,          0x3C        @ TCRR                register offset
+.equ TIMER_TCLR,          0x38        @ TCLR                register offset
+.equ TIMER_IRQEN_SET,     0x2C        @ IRQENABLE_SET       register offset
+.equ TIMER_IRQEN_CLR,	  0x30		  @ IRQENABLE_CLEAR	    register offset
+.equ INT_EN,			  0x02		  @ enable overflow INT Val
+.equ RESET_TCLR, 		  0x38		  @ resets TCL			Val
+.equ TIMER_COUNTER_VAL,   0xFFFF80FF  @ Store into TLDR and TCRR, 1.00793s
+
+@ Required countdown values to manually set
+.equ ASCII_0,			  0x30
+.equ ASCII_9,			  0x39
 
 @ register assignment definitions
 intcBase  .req R10
@@ -54,7 +70,7 @@ UART4_IRQ_TST:
 	@ Check to see if UART4 triggered the interrupt
 	LDR R3, [intcBase, #INTC_PENDING_IRQ1]
 	TST R3, #UART4INT
-	BEQ BTN_IRQ_TST @ else check button press
+	BEQ TMR_IRQ_TST
 	
 	@ Check IIR_UART to see if one of the UART interrupts occured
 	LDR R3, [uart4Base, #UART_IIR]
@@ -105,7 +121,7 @@ SEND_CHAR:
 
 	@ Check to see if we are on the last character
 	CMP R5, #DELIM
-	BEQ RESET_UART_VALUES
+	BEQ RESET_VALUES
 	BEQ END_SVC
 	
 	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
@@ -115,23 +131,89 @@ SEND_CHAR:
 	
 	B END_SVC
 	
-RESET_UART_VALUES:
+RESET_VALUES:
 	STMFD SP!, {R0-R12, LR}
 	
-	@ Reset pointer location to start of message
+	@ Reset pointer location to start of countdown
 	LDR R3, =CHAR_PTR
-	LDR R4, =MESSAGE
+	LDR R4, =START_COUNTDOWN
 	STR R4, [R3]
 	
-	@ disbale UART interrupts, enabled on next button press
+	@ Disbale UART interrupts, enabled on next button press
 	MOV R4, #0x0
 	STR R4, [uart4Base, #UART_IER]
 	
+	@ Disable RTS#	
 	MOV R3, #0x0
 	STRB R3, [uart4Base, #UART_MCR]
-	
+
 	LDMFD SP!, {R0-R12, LR} @ go back to int procedure
 	
+TMR_IRQ_TST:
+	@ Check if the timer3 IRQ interrupt occured
+	LDR R1, [intcBase, #INTC_PENDING_IRQ2]
+	TST R1, #TINT3
+	BEQ BTN_IRQ_TST   @ If it was not the timer, check button
+	
+SVC_TIMER:
+	@ Point char_ptr at the countdown string
+	LDR R1, =CHAR_PTR
+	LDR R2, =COUNTDOWN
+	STR R2, [R1] @ point char ptr at the remaining countdown
+	
+	@ See if last countdown value was sent, ascii 0 (0x30)
+	LDR R1, =COUNTVAL
+	LDR R2, [R1]
+	LDRB R3, [R2]
+	
+	CMP R3, #ASCII_0
+	BEQ END_COUNTDOWN
+	
+	@ Adjust the countdown value in the ascii string by decrementing
+	SUB R3, R3, #0x01
+	STRB R3, [R2] @ store decremented countdown value
+		
+	@ Enable UART4 interrupt for change in CTS# and THR empty
+	MOV R3, #SET_UART_IER
+	STR R3, [uart4Base, #UART_IER]
+	
+	@ Assert RTS#, request to send	
+	MOV R3, #0x02
+	STRB R3, [uart4Base, #UART_MCR]
+	
+	B END_SVC
+	
+END_COUNTDOWN:
+	@ Reset countVal
+	LDR R1, =COUNTVAL
+	LDR R2, [R1]
+	LDRB R3, [R2]
+	MOV R3, #ASCII_9 @ Set back to ASCII_9
+	STRB R3, [R2]	 @ Store reset countdown value 
+
+	@ Set char PTR to blast off, not timed
+	LDR R1, =CHAR_PTR
+	LDR R2, =BLASTOFF
+	STR R2, [R1]
+	
+	@ Disable the timer	
+	MOV R1, #0x0 			  @ bit 0 = start bit, bit 1 = auto reload bit
+	STR R1, [R2, #TIMER_TCLR] @ Set the TCLR
+	
+    @ Timer3 disable overflow interrupt
+	MOV R1, #INT_EN
+	STR R1, [R2, #TIMER_IRQEN_SET]
+	
+	@ Enable UART4 interrupt for change in CTS# and THR empty
+	MOV R3, #SET_UART_IER
+	STR R3, [uart4Base, #UART_IER]
+	
+	@ Assert RTS#, request to send	
+	MOV R3, #0x02
+	STRB R3, [uart4Base, #UART_MCR]
+	
+	B END_SVC
+
 BTN_IRQ_TST:
 	@ Check if INT occured from GPIO1
 	LDR R3, [intcBase, #INTC_PENDING_IRQ3]
@@ -148,10 +230,27 @@ SVC_BUTTON:
 	@ Disable GPIO1_31 intrrupt requests and INTC interrupt requests
 	MOV R3, #GPIO_31	
 	STR R3, [gpio1Base, #GPIO_IRQ_STAT_0] @ 1 at bit 31 of GPIO_IRQ_STAT_0
+	
+					@ Timer3 settings
+	@ Ensure counter is reset to initial value in TCRR
+	LDR R2, =TIMER3_BASE
+	LDR R1, =TIMER_COUNTER_VAL
+	STR R1, [R2, #TIMER_TCRR]
 
+    @ Timer3 enable overflow interrupt
+	MOV R1, #INT_EN
+	STR R1, [R2, #TIMER_IRQEN_SET]
+
+	@ Set Auto-reload timer and the start timer bit for TIMER3
+	MOV R1, #0x3 			  @ bit 0 = start bit, bit 1 = auto reload bit
+	STR R1, [R2, #TIMER_TCLR] @ Set the TCLR 
+	
+					@ UART4 settings
+	@ Enable UART4 interrupt for change in CTS# and THR empty
 	MOV R3, #SET_UART_IER
 	STR R3, [uart4Base, #UART_IER]
-	
+
+	@ Assert RTS#, request to send	
 	MOV R3, #0x02
 	STRB R3, [uart4Base, #UART_MCR]
 	B END_SVC	
