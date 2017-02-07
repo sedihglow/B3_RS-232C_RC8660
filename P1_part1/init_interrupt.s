@@ -10,10 +10,10 @@ _init_interrupt:
 @ Interupt definitions
 .equ INTC_BASE,           0x48200000  @ INCPS               Base Address
 .equ INTC_MIR_CLEAR1,     0xA8        @ INTC_MIR_CLEAR2     register offset
-@.equ INTC_MIR_CLEAR2,     0xC8        @ INTC_MIR_CLEAR2     register offset
+@.equ INTC_MIR_CLEAR2,     0xC8       @ INTC_MIR_CLEAR2     register offset
 .equ INTC_MIR_CLEAR3,     0xE8        @ INTC_MIR_CLEAR3     register offset
-.equ GPIOINT1A,           0x4         @ GPIOINT1A in MIR3   Mask
-.equ UART4INT,			  0xD 		  @ UART4INT in MIR1	Mask
+.equ GPIOINT1A,           0x4         @ GPIOINT1A in MIR3   Val
+.equ UART4INT,			  0x2000 	  @ UART4INT in MIR1	Val
 
 @ reg assignment definitions
 intcBase .req R10
@@ -38,3 +38,4 @@ intcBase .req R10
 	
 	LDMFD SP!, {R0-R10, PC}
 .end
+@************** EOF *************

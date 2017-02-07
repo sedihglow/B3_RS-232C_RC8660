@@ -75,7 +75,8 @@ _start:
 @ register assignments
 
 @********************** START _start *******************************************
-STACK_INIT:
+
+INIT_STACK:
 	LDR SP, =SVC_STACK
 	ADD SP, SP, #0x1000 @ point to top of stack
 	CPS #0x12			@ Switch to IRQ mode
@@ -83,6 +84,7 @@ STACK_INIT:
 	LDR SP, =IRQ_STACK
 	ADD SP, SP, #0x1000
 	CPS #0x13			@ Switch back to SVC mode
+	
 
 INIT_PIN_MAP:
 	BL _init_pinMap
@@ -109,24 +111,21 @@ WAIT_LOOP:
 	B WAIT_LOOP
 
 .data
-.align 2
-	MESSAGE: 
-		.byte 0x61
-		.byte 0x0D
-.align 2
-	CHAR_PTR: .word MESSAGE
-
-.align 2
+.align 4
 	SVC_STACK:
-		.rept 1014
+		.rept 1024
 			.word 0x0000
 		.endr
-.align 2
 	IRQ_STACK:
 		.rept 1024
 			.word 0x0000
 		.endr
-
-
+.align 4
+	MESSAGE:
+		.ascii "This shit better fucking work."
+		.byte 0x0D
+.align 4
+	CHAR_PTR:
+		.word MESSAGE
 .end
 @@@@@@@@@@ EOF @@@@@@@@@@

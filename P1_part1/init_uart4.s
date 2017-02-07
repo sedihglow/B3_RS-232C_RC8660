@@ -1,8 +1,6 @@
 @ filename: init_uart4.s
 @
-@
 @ initalizes UART4 and its interrupts
-@
 @
 @ Writen by: James Ross
 
@@ -21,17 +19,15 @@ _init_uart4:
 .equ MODEM_CTRL,    0x10 	   @ Moden CTRL 		 	  register offset
 .equ UART_IIR,      0x8	 	   @ Interrupt ID		      register offset
 .equ UART_IER,      0x4	 	   @ IER_UART, Int EN         register offset
-.equ SET_UART_IER,  0x000A     @ THRIT,MODEMSTIT 16bit    register offset
-.equ LCR_CONF_MODE, 0x0083     @ Char len 8bit, conf mode Mask
-.equ LCR_OP_MODE,	0x0003     @ Char len 8bit, op mode   Mask
+
+@ Set values to use in UART4 registers
+.equ SET_UART_IER,  0x000A     @ THRIT,MODEMSTIT 16bit    Val
+.equ LCR_CONF_MODE, 0x0083     @ Char len 8bit, conf mode Val
+.equ LCR_OP_MODE,	0x0003     @ Char len 8bit, op mode   VAl
 .equ HIGH_DIV,		0x00	   @ High bytes of divisor	  Val
 .equ LOW_DIV,		0x1A 	   @ Low bytes of divisor	  Val
 .equ SET_UART16x,	0x0000	   @ sets lower 3 bits to 0	  Val
-
-.equ CR_LOCKBAUD, 0x0D
-
-.equ NUM, 0x00340000
-
+.equ CR_LOCKBAUD,   0x0D	   @ '\r', used to lock baud rate and end of msg
 
 @ reg assignment definitions
 uart4Base .req R10
@@ -63,7 +59,9 @@ lcrReg    .req R9
 	
 @*********************** Set interrupt fields **********************************
 	
-	@ TODO: Maybe do this after a button press, disable at the end of count down	
+	@ TODO: Pretty sure this should be only one on the button press. Disabled
+	@ 		upon the last message being sent, so next button press will set it
+	@		again.
 	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
 	@ Regiser (THR) is empty
 	@MOV R4, #SET_UART_IER

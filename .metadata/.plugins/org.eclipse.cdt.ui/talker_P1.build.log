@@ -1,0 +1,23 @@
+
+**** Build of configuration Debug for project talker_P1 ****
+
+"c:\\ti\\ccsv6\\utils\\bin\\gmake" -k all 
+'Building file: ../main.s'
+'Invoking: GNU Compiler'
+"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -c -mcpu=cortex-a8 -mtune=cortex-a8 -march=armv7-a -marm -Dam3359 -I"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/arm-none-eabi/include" -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -MMD -MP -MF"main.d" -MT"main.d" -o"main.o"  "../main.s"
+../main.s: Assembler messages:
+../main.s: Warning: end of file not at end of a line; newline inserted
+'Finished building: ../main.s'
+' '
+'Building file: ../startup_ARMCA8.S'
+'Invoking: GNU Compiler'
+"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -c -mcpu=cortex-a8 -mtune=cortex-a8 -march=armv7-a -marm -Dam3359 -I"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/arm-none-eabi/include" -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -MMD -MP -MF"startup_ARMCA8.d" -MT"startup_ARMCA8.d" -o"startup_ARMCA8.o"  "../startup_ARMCA8.S"
+'Finished building: ../startup_ARMCA8.S'
+' '
+'Building target: talker_P1.out'
+'Invoking: GNU Linker'
+"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -Dam3359 -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -Wl,-Map,"talker_P1.map" -nostartfiles -Wl,--defsym,STACKSIZE=0x18000 -Wl,--defsym,HEAPSIZE=0x400 -o"talker_P1.out" "./main.o" "./startup_ARMCA8.o" -Wl,-T"../AM335x.lds"  -Wl,--start-group -l"c" -l"gcc" -l"nosys" -Wl,--end-group 
+'Finished building target: talker_P1.out'
+' '
+
+**** Build Finished ****

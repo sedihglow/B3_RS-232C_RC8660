@@ -1,0 +1,12 @@
+.text
+.global _start
+_start: 
+LDR R13, =STACK
+NOP
+
+.data
+STACK:
+.rept
+.word 256
+.endr
+.end
