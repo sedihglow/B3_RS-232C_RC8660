@@ -119,9 +119,9 @@ WAIT_LOOP:
 .align 4
 	MESSAGE:
 		.byte 0x01   @ Start voice setting
-		.ascii "7O"  @ Voice of Robo Robert
+		.ascii "7O"  @ Voice of
 		.byte 0x01   @ Start of volume setting
-		.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
+		.ascii "0V"	 @ Set volume  of 9
 		.byte 0x1
 		.ascii "4S"
 		.ascii "To the point."
