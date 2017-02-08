@@ -1,117 +1,225 @@
-ARM GAS  ../main_p1_part1.s 			page 1
+ARM GAS  ../int_director.s 			page 1
 
 
-   1              	@ This program will use a RS-232C driver to make speach come out of an RC
-   2              	@ systems 8660 coice synthesizer.
-   3              	@
-   4              	@ File name: main_p1_part1.s
-   5              	@ Board: Beagle Bone Black
-   6              	@ Written by: James Ross
-   7              	
-   8              	.text
-   9              	.global MESSAGE
-  10              	.global CHAR_PTR
-  11              	.global _start
-  12              	_start:
-  13              	@********************** START _start *******************************************
-  14              	INIT_STACK:
-  15 0000 2CD09FE5 		LDR SP, =SVC_STACK
-  16 0004 01DA8DE2 		ADD SP, SP, #0x1000 @ point to top of stack
-  17 0008 120002F1 		CPS #0x12			@ Switch to IRQ mode
-  18              		
-  19 000c 24D09FE5 		LDR SP, =IRQ_STACK
-  20 0010 01DA8DE2 		ADD SP, SP, #0x1000
-  21 0014 130002F1 		CPS #0x13			@ Switch back to SVC mode
-  22              		
-  23              	INIT_PIN_MAP:
-  24 0018 FEFFFFEB 		BL _init_pinMap
-  25              		
-  26              	INIT_CLOCKS:
-  27 001c FEFFFFEB 		BL _init_clocks
-  28              	
-  29              	INIT_UART4:
-  30 0020 FEFFFFEB 		BL _init_uart4
-  31              		
-  32              	INIT_8660:
-  33 0024 FEFFFFEB 		BL _init_syth_8660
-  34              		
-  35              	INIT_INTERRUPT:
-  36 0028 FEFFFFEB 		BL _init_interrupt
-  37              	
-  38              	INIT_GPIO:
-  39 002c FEFFFFEB 		BL _init_gpio
-  40              		
-  41              	WAIT_LOOP:
-  42 0030 FEFFFFEA 		B WAIT_LOOP
-  43              	
-  44              	.data
-  45              	.align 4
-  46              		SVC_STACK:
-  47              			.rept 1024
-  48              				.word 0x0000
-  49 0000 00000000 			.endr
-  49      00000000 
-  49      00000000 
-  49      00000000 
-  49      00000000 
-  50              		IRQ_STACK:
-  51              			.rept 1024
-  52              				.word 0x0000
-  53 1000 00000000 			.endr
-ARM GAS  ../main_p1_part1.s 			page 2
+   1              	@ filename: int_director.s
+   2              	@
+   3              	@ Interrupt handler for UART4, GPIO1_31 button, eventually a timer
+   4              	@
+   5              	@ Written by: James Ross
+   6              	
+   7              	.text
+   8              	.global _int_director
+   9              	_int_director:
+  10              	@ Interupt definitions
+  11              	.equ INTC_BASE,           0x48200000 @ INCPS               	  Base Address
+  12              	.equ INTC_CONTROL,        0x48       @ INTC_CONTROL        	  register offset
+  13              	.equ INTC_CONFIG,         0x10       @ INTC_SYSCONFIG      	  register offset
+  14              	.equ INTC_MIR_CLEAR2,     0xC8       @ INTC_MIR_CLEAR2     	  register offset
+  15              	.equ INTC_MIR_CLEAR3,     0xE8       @ INTC_MIR_CLEAR3     	  register offset
+  16              	.equ INTC_MIR_SET3,       0xEC       @ INTC_MIR_SET3       	  register offset
+  17              	.equ INTC_PENDING_IRQ1,	  0xB8		 @ INTC_PENDING_IRQ1	  register offset
+  18              	.equ INTC_PENDING_IRQ3,   0xF8       @ INTC_PENDING_IRQ3      register offset
+  19              	.equ GPIOINT1A,           0x4        @ GPIOINT1A in MIR1/IPI3 Mask
+  20              	
+  21              	@ GPIO definitions
+  22              	.equ GPIO1_BASE,		  0x4804C000  @ GPIO1 				Base Address
+  23              	.equ GPIO_IRQ_STAT_0,	  0x2C	  	  @ GPIO_IRQSTATUS_0 	register offset
+  24              	.equ GPIO_31,			  0x80000000  @ GPIO_31 raised bit	Mask
+  25              	
+  26              	@ UART definitions
+  27              	.equ UART4_BASE,    	  0x481A8000 @ UART4          	      Base Address
+  28              	.equ UART_TXHR,	   		  0x0	  	 @ THR Transmit Holding   register offset
+  29              	.equ UART_LSR,			  0x14		 @ Line control reg		  register offset
+  30              	.equ UART_MCR,            0x10 	     @ Modem CTRL 			  register offset
+  31              	.equ UART_MSR,			  0x18		 @ Modem Status Reg 	  register offset
+  32              	.equ UART_IIR,     		  0x8	 	 @ Interrupt ID		  	  register offset
+  33              	.equ UART_IER,     	      0x4	 	 @ IER_UART, Int EN       register offset
+  34              	
+  35              	.equ CTS_CHECK, 		  0x10		 @ Bit 4 used in MSR	  Mask
+  36              	.equ THR_CHECK,			  0x20       @ Bit 5 used in LSR	  Mask
+  37              	.equ UART4INT,			  0x2000     @ UART4INT in MIR1/IPI1  Mask
+  38              	.equ THR_CLR,			  0xFFFD 	 @ And Clears bit1 in IER Mask
+  39              	.equ SET_UART_IER,  	  0x000A     @ THRIT,MODEMSTIT 16bit  Val
+  40              	
+  41              	.equ DELIM,				  0x0D		 @ Final character sent in a messege
+  42              	
+  43              	@ register assignment definitions
+  44              	intcBase  .req R10
+  45              	gpio1Base .req R9
+  46              	uart4Base .req R8
+  47              	
+  48              	@******************************* start _int_director ***************************
+  49 0000 38472DE9 		STMFD SP!, {R3-R5, R8-R10, LR}
+  50 0004 F8A09FE5 		LDR intcBase, =INTC_BASE
+  51 0008 F8809FE5 		LDR uart4Base, =UART4_BASE
+  52              		
+  53              	UART4_IRQ_TST:
+  54              		@ Check to see if UART4 triggered the interrupt
+  55 000c B8309AE5 		LDR R3, [intcBase, #INTC_PENDING_IRQ1]
+  56 0010 020A13E3 		TST R3, #UART4INT
+  57 0014 2800000A 		BEQ BTN_IRQ_TST @ else check button press
+ARM GAS  ../int_director.s 			page 2
 
 
-  53      00000000 
-  53      00000000 
-  53      00000000 
-  53      00000000 
-  54              	.align 4
-  55              		MESSAGE:
-  56 2000 01       			.byte 0x01   @ Start voice setting
-  57 2001 374F     			.ascii "7O"  @ Voice of Robo Robert
-  58 2003 01       			.byte 0x01   @ Start of volume setting
-  59 2004 3956     			.ascii "9V"	 @ Set volume 0 of 9 (lowest setting, still loud)
-  60 2006 01       			.byte 0x1
-  61 2007 3453     			.ascii "4S"
-  62 2009 546F2074 			.ascii "To the point."
-  62      68652070 
-  62      6F696E74 
-  62      2E
-  63 2016 0D       			.byte 0x0D
-  64 2017 00000000 	.align 4
-  64      00000000 
-  64      00
-  65              		CHAR_PTR:
-  66 2020 00000000 			.word MESSAGE
-  67 2024 00000000 	.end
-  67      00000000 
-  67      00000000 
-ARM GAS  ../main_p1_part1.s 			page 3
+  58              		
+  59              		@ Check IIR_UART to see if one of the UART interrupts occured
+  60 0018 083098E5 		LDR R3, [uart4Base, #UART_IIR]
+  61 001c 010013E3 		TST R3, #0x1
+  62 0020 3300001A 		BNE END_SVC
+  63              	
+  64              	TALKER_SVC:
+  65              		@ See if CTS# is asserted
+  66 0024 183098E5 		LDR R3, [uart4Base, #UART_MSR]
+  67 0028 100013E3 		TST R3, #CTS_CHECK
+  68 002c 0700001A 		BNE YES_CTS_THR_TST
+  69              		@ else continue NO_CTS_THR_TST
+  70              	
+  71              	NO_CTS_THR_TST:  @ CTS# not asserted low
+  72              		@ Check if THR is empty
+  73 0030 143098E5 		LDR R3, [uart4Base, #UART_LSR]
+  74 0034 200013E3 		TST R3, #THR_CHECK
+  75 0038 2D00000A 		BEQ END_SVC  @ CTS# not asserted, THR not empty, return
+  76              		
+  77              		@ THR is empty, CTS# not asserted, Mask THR interrupt to 0
+  78 003c 043098E5 		LDR R3, [uart4Base, #UART_IER]
+  79 0040 C4409FE5 		LDR R4, =THR_CLR
+  80 0044 034004E0 		AND R4, R4, R3		@ Clear bit, THR interrupt
+  81 0048 044088E5 		STR R4, [uart4Base, #UART_IER] @ Store result with lowest bit (THR INT) clear
+  82              		
+  83              		@ Return to wait loop waiting for CTS# to be asserted
+  84 004c 280000EA 		B END_SVC
+  85              		
+  86              	YES_CTS_THR_TST: @ CTS# asserted low
+  87              		@ Check if THR is empty
+  88 0050 143098E5 		LDR R3, [uart4Base, #UART_LSR]
+  89 0054 200013E3 		TST R3, #THR_CHECK
+  90 0058 2500000A 		BEQ END_SVC  @ THR not empty, return to wait for THR
+  91              		
+  92 005c 043098E5 		LDR R3, [uart4Base, #UART_IER]
+  93 0060 A4409FE5 		LDR R4, =THR_CLR
+  94 0064 034004E0 		AND R4, R4, R3				   @ Clear bit, THR interrupt
+  95 0068 044088E5 		STR R4, [uart4Base, #UART_IER] @ Store result with lowest bit (THR INT) clear
+  96              		@ else continue to SEND_CHAR	
+  97              		
+  98              	SEND_CHAR:
+  99 006c 9C309FE5 		LDR R3, =CHAR_PTR
+ 100 0070 004093E5 	   	LDR R4, [R3]
+ 101 0074 0150D4E4 	    LDRB R5, [R4], #1			     @ Get character to send, increment addr
+ 102              	   	
+ 103 0078 0050C8E5 	    STRB R5, [uart4Base, #UART_TXHR] @ Send char on the UART
+ 104 007c 004083E5 	    STR R4, [R3]					 @ Store incremented ptr position
+ 105              	
+ 106              		@ Check to see if we are on the last character
+ 107 0080 0D0055E3 		CMP R5, #DELIM
+ 108 0084 0300000A 		BEQ RESET_UART_VALUES
+ 109 0088 1900000A 		BEQ END_SVC
+ 110              		
+ 111              		@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
+ 112              		@ Regiser (THR) is empty IF more characters need to be sent.
+ 113 008c 0A40A0E3 		MOV R4, #SET_UART_IER
+ 114 0090 044088E5 		STR R4, [uart4Base, #UART_IER]
+ARM GAS  ../int_director.s 			page 3
+
+
+ 115              		
+ 116 0094 160000EA 		B END_SVC
+ 117              		
+ 118              	RESET_UART_VALUES:
+ 119 0098 FF5F2DE9 		STMFD SP!, {R0-R12, LR}
+ 120              		
+ 121              		@ Reset pointer location to start of message
+ 122 009c 6C309FE5 		LDR R3, =CHAR_PTR
+ 123 00a0 6C409FE5 		LDR R4, =MESSAGE
+ 124 00a4 004083E5 		STR R4, [R3]
+ 125              		
+ 126              		@ disbale UART interrupts, enabled on next button press
+ 127 00a8 0040A0E3 		MOV R4, #0x0
+ 128 00ac 044088E5 		STR R4, [uart4Base, #UART_IER]
+ 129              		
+ 130 00b0 0030A0E3 		MOV R3, #0x0
+ 131 00b4 1030C8E5 		STRB R3, [uart4Base, #UART_MCR]
+ 132              		
+ 133 00b8 FF5FBDE8 		LDMFD SP!, {R0-R12, LR} @ go back to int procedure
+ 134              		
+ 135              	BTN_IRQ_TST:
+ 136              		@ Check if INT occured from GPIO1
+ 137 00bc F8309AE5 		LDR R3, [intcBase, #INTC_PENDING_IRQ3]
+ 138 00c0 040013E3 		TST R3, #GPIOINT1A
+ 139 00c4 0A00000A 		BEQ END_SVC
+ 140              		
+ 141              		@ Check if the button on GPIO_31 triggered the interrupt
+ 142 00c8 48909FE5 		LDR gpio1Base, =GPIO1_BASE
+ 143 00cc 2C3099E5 		LDR R3, [gpio1Base, #GPIO_IRQ_STAT_0]
+ 144 00d0 020113E3 		TST R3, #GPIO_31
+ 145 00d4 0600000A 		BEQ END_SVC @ If GPIO_31 does not have a pending INT, return
+ 146              		
+ 147              	SVC_BUTTON:
+ 148              		@ Disable GPIO1_31 intrrupt requests and INTC interrupt requests
+ 149 00d8 0231A0E3 		MOV R3, #GPIO_31	
+ 150 00dc 2C3089E5 		STR R3, [gpio1Base, #GPIO_IRQ_STAT_0] @ 1 at bit 31 of GPIO_IRQ_STAT_0
+ 151              	
+ 152 00e0 0A30A0E3 		MOV R3, #SET_UART_IER
+ 153 00e4 043088E5 		STR R3, [uart4Base, #UART_IER]
+ 154              		
+ 155 00e8 0230A0E3 		MOV R3, #0x02
+ 156 00ec 1030C8E5 		STRB R3, [uart4Base, #UART_MCR]
+ 157 00f0 FFFFFFEA 		B END_SVC	
+ 158              		
+ 159              	END_SVC:
+ 160              		@ Disable NEWIRQA bit so processor can respond to IRQ
+ 161 00f4 0130A0E3 		MOV R3, #0x1
+ 162 00f8 48308AE5 		STR R3, [intcBase, #INTC_CONTROL]	
+ 163              	
+ 164 00fc 3847BDE8 		LDMFD SP!, {R3-R5, R8-R10, LR}
+ 165 0100 04F05EE2 		SUBS PC, LR, #0x4
+ 166 0104 00002048 	.end
+ 166      00801A48 
+ 166      FDFF0000 
+ 166      00000000 
+ 166      00000000 
+ARM GAS  ../int_director.s 			page 4
 
 
 DEFINED SYMBOLS
-  ../main_p1_part1.s:55     .data:00002000 MESSAGE
-  ../main_p1_part1.s:65     .data:00002020 CHAR_PTR
-  ../main_p1_part1.s:12     .text:00000000 _start
-  ../main_p1_part1.s:14     .text:00000000 INIT_STACK
-  ../main_p1_part1.s:46     .data:00000000 SVC_STACK
-  ../main_p1_part1.s:15     .text:00000000 $a
-  ../main_p1_part1.s:50     .data:00001000 IRQ_STACK
-  ../main_p1_part1.s:23     .text:00000018 INIT_PIN_MAP
-  ../main_p1_part1.s:26     .text:0000001c INIT_CLOCKS
-  ../main_p1_part1.s:29     .text:00000020 INIT_UART4
-  ../main_p1_part1.s:32     .text:00000024 INIT_8660
-  ../main_p1_part1.s:35     .text:00000028 INIT_INTERRUPT
-  ../main_p1_part1.s:38     .text:0000002c INIT_GPIO
-  ../main_p1_part1.s:41     .text:00000030 WAIT_LOOP
-  ../main_p1_part1.s:45     .data:00000000 $d
-  ../main_p1_part1.s:44     .text:00000034 $d
+   ../int_director.s:9      .text:00000000 _int_director
+   ../int_director.s:11     *ABS*:48200000 INTC_BASE
+   ../int_director.s:12     *ABS*:00000048 INTC_CONTROL
+   ../int_director.s:13     *ABS*:00000010 INTC_CONFIG
+   ../int_director.s:14     *ABS*:000000c8 INTC_MIR_CLEAR2
+   ../int_director.s:15     *ABS*:000000e8 INTC_MIR_CLEAR3
+   ../int_director.s:16     *ABS*:000000ec INTC_MIR_SET3
+   ../int_director.s:17     *ABS*:000000b8 INTC_PENDING_IRQ1
+   ../int_director.s:18     *ABS*:000000f8 INTC_PENDING_IRQ3
+   ../int_director.s:19     *ABS*:00000004 GPIOINT1A
+   ../int_director.s:22     *ABS*:4804c000 GPIO1_BASE
+   ../int_director.s:23     *ABS*:0000002c GPIO_IRQ_STAT_0
+   ../int_director.s:24     *ABS*:80000000 GPIO_31
+   ../int_director.s:27     *ABS*:481a8000 UART4_BASE
+   ../int_director.s:28     *ABS*:00000000 UART_TXHR
+   ../int_director.s:29     *ABS*:00000014 UART_LSR
+   ../int_director.s:30     *ABS*:00000010 UART_MCR
+   ../int_director.s:31     *ABS*:00000018 UART_MSR
+   ../int_director.s:32     *ABS*:00000008 UART_IIR
+   ../int_director.s:33     *ABS*:00000004 UART_IER
+   ../int_director.s:35     *ABS*:00000010 CTS_CHECK
+   ../int_director.s:36     *ABS*:00000020 THR_CHECK
+   ../int_director.s:37     *ABS*:00002000 UART4INT
+   ../int_director.s:38     *ABS*:0000fffd THR_CLR
+   ../int_director.s:39     *ABS*:0000000a SET_UART_IER
+   ../int_director.s:41     *ABS*:0000000d DELIM
+   ../int_director.s:49     .text:00000000 $a
+   ../int_director.s:53     .text:0000000c UART4_IRQ_TST
+   ../int_director.s:135    .text:000000bc BTN_IRQ_TST
+   ../int_director.s:159    .text:000000f4 END_SVC
+   ../int_director.s:64     .text:00000024 TALKER_SVC
+   ../int_director.s:86     .text:00000050 YES_CTS_THR_TST
+   ../int_director.s:71     .text:00000030 NO_CTS_THR_TST
+   ../int_director.s:98     .text:0000006c SEND_CHAR
+   ../int_director.s:118    .text:00000098 RESET_UART_VALUES
+   ../int_director.s:147    .text:000000d8 SVC_BUTTON
+   ../int_director.s:166    .text:00000104 $d
                    .debug_aranges:0000000c $d
 
 UNDEFINED SYMBOLS
-_init_pinMap
-_init_clocks
-_init_uart4
-_init_syth_8660
-_init_interrupt
-_init_gpio
+CHAR_PTR
+MESSAGE

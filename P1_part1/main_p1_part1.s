@@ -59,7 +59,7 @@ WAIT_LOOP:
 		.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
 		.byte 0x1
 		.ascii "4S"
-		.ascii "To the point."
+		.ascii "I don't want to count the letters"
 		.byte 0x0D
 .align 4
 	CHAR_PTR:

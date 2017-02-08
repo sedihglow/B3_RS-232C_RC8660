@@ -93,7 +93,7 @@ LOAD ./startup_ARMCA8.o
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
                 0x80000324                __exidx_end = .
 
-.data           0x80000330     0x2030
+.data           0x80000330     0x2040
                 0x80000330                . = ALIGN (0x4)
                 0x80000330                __data_start__ = .
  *(vtable)
@@ -105,69 +105,69 @@ LOAD ./startup_ARMCA8.o
  .data          0x80000330        0x0 ./init_syth_8660.o
  .data          0x80000330        0x0 ./init_uart4.o
  .data          0x80000330        0x0 ./int_director.o
- .data          0x80000330     0x2030 ./main_p1_part1.o
+ .data          0x80000330     0x2040 ./main_p1_part1.o
                 0x80002330                MESSAGE
-                0x80002350                CHAR_PTR
- .data          0x80002360        0x0 ./startup_ARMCA8.o
-                0x80002360                . = ALIGN (0x4)
-                0x80002360                PROVIDE (__preinit_array_start, .)
+                0x80002360                CHAR_PTR
+ .data          0x80002370        0x0 ./startup_ARMCA8.o
+                0x80002370                . = ALIGN (0x4)
+                0x80002370                PROVIDE (__preinit_array_start, .)
  *(.preinit_array)
-                0x80002360                PROVIDE (__preinit_array_end, .)
-                0x80002360                . = ALIGN (0x4)
-                0x80002360                PROVIDE (__init_array_start, .)
+                0x80002370                PROVIDE (__preinit_array_end, .)
+                0x80002370                . = ALIGN (0x4)
+                0x80002370                PROVIDE (__init_array_start, .)
  *(SORT(.init_array.*))
  *(.init_array)
-                0x80002360                PROVIDE (__init_array_end, .)
-                0x80002360                . = ALIGN (0x4)
-                0x80002360                PROVIDE (__fini_array_start, .)
+                0x80002370                PROVIDE (__init_array_end, .)
+                0x80002370                . = ALIGN (0x4)
+                0x80002370                PROVIDE (__fini_array_start, .)
  *(SORT(.fini_array.*))
  *(.fini_array)
-                0x80002360                PROVIDE (__fini_array_end, .)
-                0x80002360                . = ALIGN (0x4)
-                0x80002360                __data_end__ = .
+                0x80002370                PROVIDE (__fini_array_end, .)
+                0x80002370                . = ALIGN (0x4)
+                0x80002370                __data_end__ = .
 
-.igot.plt       0x80002360        0x0
+.igot.plt       0x80002370        0x0
  .igot.plt      0x00000000        0x0 ./init_clocks.o
 
-.bss            0x80002360        0x0
-                0x80002360                . = ALIGN (0x4)
-                0x80002360                __bss_start__ = .
+.bss            0x80002370        0x0
+                0x80002370                . = ALIGN (0x4)
+                0x80002370                __bss_start__ = .
  *(.bss*)
- .bss           0x80002360        0x0 ./init_clocks.o
- .bss           0x80002360        0x0 ./init_gpio.o
- .bss           0x80002360        0x0 ./init_interrupt.o
- .bss           0x80002360        0x0 ./init_pinMapping.o
- .bss           0x80002360        0x0 ./init_syth_8660.o
- .bss           0x80002360        0x0 ./init_uart4.o
- .bss           0x80002360        0x0 ./int_director.o
- .bss           0x80002360        0x0 ./main_p1_part1.o
- .bss           0x80002360        0x0 ./startup_ARMCA8.o
+ .bss           0x80002370        0x0 ./init_clocks.o
+ .bss           0x80002370        0x0 ./init_gpio.o
+ .bss           0x80002370        0x0 ./init_interrupt.o
+ .bss           0x80002370        0x0 ./init_pinMapping.o
+ .bss           0x80002370        0x0 ./init_syth_8660.o
+ .bss           0x80002370        0x0 ./init_uart4.o
+ .bss           0x80002370        0x0 ./int_director.o
+ .bss           0x80002370        0x0 ./main_p1_part1.o
+ .bss           0x80002370        0x0 ./startup_ARMCA8.o
  *(COMMON)
-                0x80002360                __bss_end__ = .
+                0x80002370                __bss_end__ = .
 
-.heap           0x80002360      0x400
+.heap           0x80002370      0x400
  FILL mask 0xdeadbeef
-                0x80002360                . = ALIGN (0x4)
-                0x80002360                __end__ = .
-                0x80002360                end = __end__
-                0x80002360                __HeapBase = __end__
+                0x80002370                . = ALIGN (0x4)
+                0x80002370                __end__ = .
+                0x80002370                end = __end__
+                0x80002370                __HeapBase = __end__
  *(.heap*)
- .heap          0x80002360        0x0 ./startup_ARMCA8.o
-                0x80002760                . = (. + HEAPSIZE)
- *fill*         0x80002360      0x400 deadbeef
-                0x80002760                __HeapLimit = .
+ .heap          0x80002370        0x0 ./startup_ARMCA8.o
+                0x80002770                . = (. + HEAPSIZE)
+ *fill*         0x80002370      0x400 deadbeef
+                0x80002770                __HeapLimit = .
 
-.stack          0x80002760    0x18000
+.stack          0x80002770    0x18000
  FILL mask 0xbad0bad0
-                0x80002760                . = ALIGN (0x4)
-                0x80002760                __StackLimit = .
+                0x80002770                . = ALIGN (0x4)
+                0x80002770                __StackLimit = .
  *(.stack*)
- .stack         0x80002760        0x0 ./startup_ARMCA8.o
-                0x8001a760                . = (. + STACKSIZE)
- *fill*         0x80002760    0x18000 bad0bad0
-                0x8001a760                __StackTop = .
-                0x8001a760                __StackBase = .
-                0x8001a760                PROVIDE (__stack, __StackTop)
+ .stack         0x80002770        0x0 ./startup_ARMCA8.o
+                0x8001a770                . = (. + STACKSIZE)
+ *fill*         0x80002770    0x18000 bad0bad0
+                0x8001a770                __StackTop = .
+                0x8001a770                __StackBase = .
+                0x8001a770                PROVIDE (__stack, __StackTop)
 START GROUP
 LOAD c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib\libc.a
 LOAD c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4\libgcc.a

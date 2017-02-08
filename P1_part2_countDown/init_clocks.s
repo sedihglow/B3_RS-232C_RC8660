@@ -32,8 +32,8 @@ enableClock .req R9
 	STR enableClock, [cmPerBase, #UART4_CLK_CTRL]
 	
 	@ Enable timer3 clock
-	@STR enableClock, [cmPerBase, #TIMER3_CLKSEL]   @ 32khz clock
-	@STR enableClock, [cmPerBase, #TIMER3_CLK_CTRL] @ enable
+	STR enableClock, [cmPerBase, #TIMER3_CLKSEL]   @ 32khz clock
+	STR enableClock, [cmPerBase, #TIMER3_CLK_CTRL] @ enable
 	
 	LDMFD SP!, {R3, R9, R10 ,PC}
 .end

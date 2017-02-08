@@ -21,19 +21,19 @@ _init_timer3:
 timer3Base .req R10
 
 @********************* START _init_timer3 **************************************
-	STMFD SP!, {R1, R10, LR}
+	STMFD SP!, {R2, R10, LR}
 	
 	LDR timer3Base, =TIMER3_BASE
 	
-	@ Initialize timer3 registers. set count and overflow INT generation	
-	MOV R1, #SW_RESET	 @ value for software reset in TIOCP_CFG
-	STR R1, [timer3Base, #TIMER_TIOCP_CFG]
-	
 	@ Set count value in TLDR and TCRR
-	LDR R1, =TIMER_COUNTER_VAL
-	STR R1, [timer3Base, #TIMER_TLDR]
-	STR R1, [timer3Base, #TIMER_TCRR]
+	LDR R2, =TIMER_COUNTER_VAL
+	STR R2, [timer3Base, #TIMER_TLDR]
+	STR R2, [timer3Base, #TIMER_TCRR]
 	
-	LDMFD SP!, {R1, R10, PC}
+	@ Initialize timer3 registers. set count and overflow INT generation	
+	MOV R2, #SW_RESET	 @ value for software reset in TIOCP_CFG
+	STR R2, [timer3Base, #TIMER_TIOCP_CFG]
+	
+	LDMFD SP!, {R2, R10, PC}
 .end
 @************* EOF ***************

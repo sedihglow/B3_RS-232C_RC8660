@@ -100,8 +100,8 @@ INIT_UART4:
 INIT_8660:
 	BL _init_syth_8660
 
-@INIT_TIMER3:
-@	BL _init_timer3
+INIT_TIMER3:
+	BL _init_timer3
 
 INIT_GPIO:
 	BL _init_gpio
@@ -157,6 +157,6 @@ WAIT_LOOP:
 		.byte  0x0D
 .align 4
 	COUNTVAL:
-		.word COUNTDOWN+9 @ initialized at countdown value, string "1" of "10"
+		.word  (COUNTDOWN+9) @ to be initialized at countdown value, string "1" of "10"
 .end
 @@@@@@@@@@ EOF @@@@@@@@@@

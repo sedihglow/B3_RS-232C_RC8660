@@ -57,14 +57,16 @@ _int_director:
 .equ ASCII_9,			  0x39
 
 @ register assignment definitions
-intcBase  .req R10
-gpio1Base .req R9
-uart4Base .req R8
+intcBase  .req  R10
+gpio1Base .req  R9
+uart4Base .req  R8
+timer3Base .req R7
 
 @******************************* start _int_director ***************************
-	STMFD SP!, {R3-R5, R8-R10, LR}
+	STMFD SP!, {R3-R5, R7-R10, LR}
 	LDR intcBase, =INTC_BASE
 	LDR uart4Base, =UART4_BASE
+	LDR timer3Base, =TIMER3_BASE
 	
 UART4_IRQ_TST:
 	@ Check to see if UART4 triggered the interrupt
@@ -181,6 +183,10 @@ SVC_TIMER:
 	MOV R3, #0x02
 	STRB R3, [uart4Base, #UART_MCR]
 	
+	@ Ensure counter is reset to initial value in TCRR
+	LDR R1, =TIMER_COUNTER_VAL
+	STR R1, [timer3Base, #TIMER_TCRR]
+	
 	B END_SVC
 	
 END_COUNTDOWN:
@@ -233,17 +239,16 @@ SVC_BUTTON:
 	
 					@ Timer3 settings
 	@ Ensure counter is reset to initial value in TCRR
-	LDR R2, =TIMER3_BASE
 	LDR R1, =TIMER_COUNTER_VAL
-	STR R1, [R2, #TIMER_TCRR]
+	STR R1, [timer3Base, #TIMER_TCRR]
 
     @ Timer3 enable overflow interrupt
 	MOV R1, #INT_EN
-	STR R1, [R2, #TIMER_IRQEN_SET]
+	STR R1, [timer3Base, #TIMER_IRQEN_SET]
 
 	@ Set Auto-reload timer and the start timer bit for TIMER3
 	MOV R1, #0x3 			  @ bit 0 = start bit, bit 1 = auto reload bit
-	STR R1, [R2, #TIMER_TCLR] @ Set the TCLR 
+	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
 	
 					@ UART4 settings
 	@ Enable UART4 interrupt for change in CTS# and THR empty
@@ -260,7 +265,7 @@ END_SVC:
 	MOV R3, #0x1
 	STR R3, [intcBase, #INTC_CONTROL]	
 
-	LDMFD SP!, {R3-R5, R8-R10, LR}
+	LDMFD SP!, {R3-R5, R7-R10, LR}
 	SUBS PC, LR, #0x4
 .end
 @****************** EOF ****************

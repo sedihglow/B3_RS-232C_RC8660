@@ -3632,3 +3632,8 @@ Command-line arguments:  -os win32 -ws win32 -arch x86 -product com.ti.ccstudio.
 
 !ENTRY org.eclipse.ui 4 4 2017-02-07 14:41:20.211
 !MESSAGE Unable to find Action Set: org.eclipse.rtsc.xdctools.ui.cdt.actionSet2
+
+!ENTRY org.eclipse.cdt.dsf 4 10005 2017-02-07 15:25:50.430
+!MESSAGE Request for monitor: 'RequestMonitor (org.eclipse.cdt.dsf.concurrent.DataRequestMonitor@290e58): Status ERROR: com.ti.ccstudio.debug code=10004 Marker id 731 not found. null' resulted in an error.
+!SUBENTRY 1 com.ti.ccstudio.debug 4 10004 2017-02-07 15:25:50.430
+!MESSAGE Marker id 731 not found.
