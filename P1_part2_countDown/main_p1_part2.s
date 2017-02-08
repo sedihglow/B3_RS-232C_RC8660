@@ -153,7 +153,7 @@ WAIT_LOOP:
 		.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
 		.byte  0x1	 @ Start of rate of speech setting
 		.ascii "4S"  @ Rate of speach, default 5
-		.ascii "9"  @ Count down from 10, decrements afer every send
+		.ascii "9"   @ Count down from 10, decrements afer every send
 		.byte  0x0D
 .align 4
 	COUNTVAL:

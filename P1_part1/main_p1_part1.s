@@ -10,6 +10,8 @@
 .global CHAR_PTR
 .global _start
 _start:
+.equ CMD_CHAR,	 0x01 @ Ctrl+A, used at start of commands
+.equ DELIM_CHAR, 0x0D @ Used at end of input to talker
 @********************** START _start *******************************************
 INIT_STACK:
 	LDR SP, =SVC_STACK
@@ -53,14 +55,14 @@ WAIT_LOOP:
 		.endr
 .align 4
 	MESSAGE:
-		.byte 0x01   @ Start voice setting
+		.byte CMD_CHAR 
 		.ascii "7O"  @ Voice of Robo Robert
-		.byte 0x01   @ Start of volume setting
-		.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
-		.byte 0x1
-		.ascii "4S"
-		.ascii "I don't want to count the letters"
-		.byte 0x0D
+		.byte CMD_CHAR  
+		.ascii "9V"	 @ Set volume 0 of 9 (lowest setting, still loud)
+		.byte CMD_CHAR
+		.ascii "4S"	 @ Speech rate reduced by 1 from default 5
+		.ascii "This better fucking work."	
+		.byte 0x0D		
 .align 4
 	CHAR_PTR:
 		.word MESSAGE

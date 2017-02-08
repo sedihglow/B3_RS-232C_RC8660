@@ -123,7 +123,7 @@ SEND_CHAR:
 
 	@ Check to see if we are on the last character
 	CMP R5, #DELIM
-	BEQ RESET_VALUES
+	BLEQ RESET_VALUES
 	BEQ END_SVC
 	
 	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
@@ -136,11 +136,6 @@ SEND_CHAR:
 RESET_VALUES:
 	STMFD SP!, {R0-R12, LR}
 	
-	@ Reset pointer location to start of countdown
-	LDR R3, =CHAR_PTR
-	LDR R4, =START_COUNTDOWN
-	STR R4, [R3]
-	
 	@ Disbale UART interrupts, enabled on next button press
 	MOV R4, #0x0
 	STR R4, [uart4Base, #UART_IER]
@@ -149,7 +144,7 @@ RESET_VALUES:
 	MOV R3, #0x0
 	STRB R3, [uart4Base, #UART_MCR]
 
-	LDMFD SP!, {R0-R12, LR} @ go back to int procedure
+	LDMFD SP!, {R0-R12, PC} @ go back to int procedure
 	
 TMR_IRQ_TST:
 	@ Check if the timer3 IRQ interrupt occured
@@ -167,13 +162,14 @@ SVC_TIMER:
 	LDR R1, =COUNTVAL
 	LDR R2, [R1]
 	LDRB R3, [R2]
-	
+
 	CMP R3, #ASCII_0
 	BEQ END_COUNTDOWN
 	
 	@ Adjust the countdown value in the ascii string by decrementing
-	SUB R3, R3, #0x01
-	STRB R3, [R2] @ store decremented countdown value
+	CMP R3, #ASCII_9
+	SUBNE R3, R3, #0x01
+	STRNEB R3, [R2] @ store decremented countdown value
 		
 	@ Enable UART4 interrupt for change in CTS# and THR empty
 	MOV R3, #SET_UART_IER
@@ -207,8 +203,8 @@ END_COUNTDOWN:
 	STR R1, [R2, #TIMER_TCLR] @ Set the TCLR
 	
     @ Timer3 disable overflow interrupt
-	MOV R1, #INT_EN
-	STR R1, [R2, #TIMER_IRQEN_SET]
+	MOV R1, #0x2
+	STR R1, [R2, #TIMER_IRQEN_CLR]
 	
 	@ Enable UART4 interrupt for change in CTS# and THR empty
 	MOV R3, #SET_UART_IER
@@ -258,6 +254,12 @@ SVC_BUTTON:
 	@ Assert RTS#, request to send	
 	MOV R3, #0x02
 	STRB R3, [uart4Base, #UART_MCR]
+	
+	@ Reset pointer location to start of countdown
+	LDR R3, =CHAR_PTR
+	LDR R4, =START_COUNTDOWN
+	STR R4, [R3]
+	
 	B END_SVC	
 	
 END_SVC:

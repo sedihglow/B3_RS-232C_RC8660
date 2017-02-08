@@ -105,7 +105,7 @@ SEND_CHAR:
 
 	@ Check to see if we are on the last character
 	CMP R5, #DELIM
-	BEQ RESET_UART_VALUES
+	BLEQ RESET_UART_VALUES
 	BEQ END_SVC
 	
 	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
@@ -130,8 +130,8 @@ RESET_UART_VALUES:
 	MOV R3, #0x0
 	STRB R3, [uart4Base, #UART_MCR]
 	
-	LDMFD SP!, {R0-R12, LR} @ go back to int procedure
-	
+	LDMFD SP!, {R0-R12, PC} @ go back to int procedure
+			
 BTN_IRQ_TST:
 	@ Check if INT occured from GPIO1
 	LDR R3, [intcBase, #INTC_PENDING_IRQ3]

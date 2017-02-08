@@ -26,9 +26,9 @@ timer3Base .req R10
 	LDR timer3Base, =TIMER3_BASE
 	
 	@ Set count value in TLDR and TCRR
-	LDR R2, =TIMER_COUNTER_VAL
-	STR R2, [timer3Base, #TIMER_TLDR]
-	STR R2, [timer3Base, #TIMER_TCRR]
+	@LDR R2, =TIMER_COUNTER_VAL
+	@STR R2, [timer3Base, #TIMER_TLDR]
+	@STR R2, [timer3Base, #TIMER_TCRR]
 	
 	@ Initialize timer3 registers. set count and overflow INT generation	
 	MOV R2, #SW_RESET	 @ value for software reset in TIOCP_CFG
