@@ -1,7 +1,11 @@
 MODULES_CODE_OFFSET=
 MODULES_DATA_OFFSET=
-MODULES_MRU_PATH=N\:\\ECE372\\P1_part1\\Debug\\P1_part1.out
-MODULES_MRU_PATH.1=\#SYM_\#(,) path\=N\:\\ECE372\\P1_part1\\Debug\\P1_part1.out
+MODULES_MRU_PATH=N\:\\ECE372\\P1_part2_countDown\\Debug\\P1_part2_countDown.out
+MODULES_MRU_PATH.1=\#SYM_\#(,) path\=N\:\\ECE372\\P1_part2_countDown\\Debug\\P1_part2_countDown.out
+MODULES_MRU_PATH.2=N\:\\ECE372\\Copy of P1_part2_countDown\\Debug\\Copy of P1_part2_countDown.out
+MODULES_MRU_PATH.3=N\:\\ECE372\\P1_part1\\Debug\\P1_part1.out
+MODULES_MRU_PATH.4=\#SYM_\#(,) path\=N\:\\ECE372\\P1_part1\\Debug\\P1_part1.out
 eclipse.preferences.version=1
 symbolAutoCompleteHistory<seperator>org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser<seperator>Texas\ Instruments\ XDS100v2\ USB\ Emulator\\CortxA8=0xE1200070
+symbolAutoCompleteHistory<seperator>org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser<seperator>Texas\ Instruments\ XDS100v2\ USB\ Emulator_0\\CortxA8=CHAR_PTR,BLASTOFF,BLASTOFF_LEN,COUNT_VAL
 useAnnotationsPrefPage=true

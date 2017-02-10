@@ -39,7 +39,7 @@ SET_CTSN:
 	
 SET_RTSN:
 	LDR R4, =UART4_RTSN_PADREG
-	ADD R4, controlBase, R4		 @ Go to RTSN pad register
+	ADD R3, controlBase, R4		 @ Go to RTSN pad register
 	@ Clear lower 3 bits
 	LDR R5, [R3] 				 @ Load RTSN pad register
 	AND R5, R5, clearLowBitsFlag @ Clear lower 3 bits

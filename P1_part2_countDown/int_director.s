@@ -44,8 +44,10 @@ _int_director:
 
 @ timer definitions
 .equ TIMER3_BASE,         0x48042000  @ DMTIMER3            Base Address
+.equ TIMER_TIOCP_CFG,     0x10        @ TIOCP_CFG           register offset
 .equ TIMER_TCRR,          0x3C        @ TCRR                register offset
 .equ TIMER_TCLR,          0x38        @ TCLR                register offset
+.equ TIMER_TLDR,          0x40        @ TLDR                register offset
 .equ TIMER_IRQEN_SET,     0x2C        @ IRQENABLE_SET       register offset
 .equ TIMER_IRQEN_CLR,	  0x30		  @ IRQENABLE_CLEAR	    register offset
 .equ INT_EN,			  0x02		  @ enable overflow INT Val
@@ -53,8 +55,13 @@ _int_director:
 .equ TIMER_COUNTER_VAL,   0xFFFF80FF  @ Store into TLDR and TCRR, 1.00793s
 
 @ Required countdown values to manually set
-.equ ASCII_0,			  0x30
-.equ ASCII_9,			  0x39
+.equ MSG_LEN, 0x21 @ 33
+.equ COUNT,  0x0A
+
+@ LED definitions
+.equ SET_LED1,    	  0x00400000      @ Mask to set LED1, GPIO1_22
+.equ HIGH,			  0x01
+.equ LOW,			  0x00
 
 @ register assignment definitions
 intcBase  .req  R10
@@ -120,10 +127,18 @@ SEND_CHAR:
    	
     STRB R5, [uart4Base, #UART_TXHR] @ Send char on the UART
     STR R4, [R3]					 @ Store incremented ptr position
+    
+    LDR R1, =BLASTOFF_LEN
+    LDR R2, [R1]
+    SUB R2, R2, #0x01
+    STR R2, [R1]
 
 	@ Check to see if we are on the last character
 	CMP R5, #DELIM
 	BLEQ RESET_VALUES
+	
+	
+	CMP R5, #DELIM @ flags changed in reset_values, check again
 	BEQ END_SVC
 	
 	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
@@ -134,17 +149,49 @@ SEND_CHAR:
 	B END_SVC
 	
 RESET_VALUES:
-	STMFD SP!, {R0-R12, LR}
+	STMFD SP!, {R1-R4, R8, LR}
+	
+/*	LDR R1, =COUNT_VAL
+	LDR R2, [R1] @ get counter value
+	SUB R2, R2, #0x01
+	STR R2, [R1] @ store decremented value
+*/
+    LDR R1, =BLASTOFF_LEN
+    LDR R4, [R1]
+    
+	@ Reset char pointer and BLASTOFF_LEN Light LED
+	CMP R4, #0x0
+	@ Values passed into toggleLED	
+	MOVEQ R1, #SET_LED1	@ Set usr led 1
+	MOVEQ R2, #HIGH  	@ Set to high, on
+	MOVEQ R3, gpio1Base @ LED is on GPIO1
+	BLEQ _toggleLED	
+
+	@ reset values	
+	CMP R4, #0x0
+	LDREQ R1, =CHAR_PTR
+	LDREQ R2, =BLASTOFF
+	STREQ R2, [R1]			@ reset char ptr
+	
+	LDREQ R1, =BLASTOFF_LEN
+	MOVEQ R2, #MSG_LEN
+	STREQ R2, [R1]  		@ reset remaining length of blastoff msg
+	
+	CMP R4, #0xA @ at 10 characters left, we are on blastoff. 0 we are done
+	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
+	@ Regiser (THR) is empty IF more characters need to be sent.
+	MOVEQ R4, #SET_UART_IER
+	STREQ R4, [uart4Base, #UART_IER]
 	
 	@ Disbale UART interrupts, enabled on next button press
-	MOV R4, #0x0
-	STR R4, [uart4Base, #UART_IER]
+	MOVNE R4, #0x0
+	STRNE R4, [uart4Base, #UART_IER]
 	
 	@ Disable RTS#	
-	MOV R3, #0x0
-	STRB R3, [uart4Base, #UART_MCR]
+	MOVNE R3, #0x0
+	STRNE R3, [uart4Base, #UART_MCR]
 
-	LDMFD SP!, {R0-R12, PC} @ go back to int procedure
+	LDMFD SP!, {R1-R4, R8, PC} @ go back to int procedure
 	
 TMR_IRQ_TST:
 	@ Check if the timer3 IRQ interrupt occured
@@ -153,23 +200,12 @@ TMR_IRQ_TST:
 	BEQ BTN_IRQ_TST   @ If it was not the timer, check button
 	
 SVC_TIMER:
-	@ Point char_ptr at the countdown string
-	LDR R1, =CHAR_PTR
-	LDR R2, =COUNTDOWN
-	STR R2, [R1] @ point char ptr at the remaining countdown
-	
-	@ See if last countdown value was sent, ascii 0 (0x30)
-	LDR R1, =COUNTVAL
-	LDR R2, [R1]
-	LDRB R3, [R2]
-
-	CMP R3, #ASCII_0
+	LDR R1, =COUNT_VAL
+	LDR R2, [R1] @ get counter value
+	SUB R2, R2, #0x01
+	STR R2, [R1] @ store decremented value
+	CMP R2, #0x0
 	BEQ END_COUNTDOWN
-	
-	@ Adjust the countdown value in the ascii string by decrementing
-	CMP R3, #ASCII_9
-	SUBNE R3, R3, #0x01
-	STRNEB R3, [R2] @ store decremented countdown value
 		
 	@ Enable UART4 interrupt for change in CTS# and THR empty
 	MOV R3, #SET_UART_IER
@@ -182,30 +218,34 @@ SVC_TIMER:
 	@ Ensure counter is reset to initial value in TCRR
 	LDR R1, =TIMER_COUNTER_VAL
 	STR R1, [timer3Base, #TIMER_TCRR]
+	STR R1, [timer3Base, #TIMER_TLDR]
 	
 	B END_SVC
 	
 END_COUNTDOWN:
-	@ Reset countVal
-	LDR R1, =COUNTVAL
-	LDR R2, [R1]
-	LDRB R3, [R2]
-	MOV R3, #ASCII_9 @ Set back to ASCII_9
-	STRB R3, [R2]	 @ Store reset countdown value 
-
-	@ Set char PTR to blast off, not timed
-	LDR R1, =CHAR_PTR
-	LDR R2, =BLASTOFF
+	@ Reset countdown value
+	LDR R1, =COUNT_VAL
+	MOV R2, #COUNT
 	STR R2, [R1]
 	
-	@ Disable the timer	
+	@ Initialize timer3 registers. set count and overflow INT generation	
+	MOV R2, #0x01	 @ value for software reset in TIOCP_CFG
+	STR R2, [timer3Base, #TIMER_TIOCP_CFG]
+	
+    @ Timer3 enable overflow interrupt
+	MOV R1, #INT_EN
+	STR R1, [timer3Base, #TIMER_IRQEN_CLR]
+
+	@ Set Auto-reload timer and the start timer bit for TIMER3
 	MOV R1, #0x0 			  @ bit 0 = start bit, bit 1 = auto reload bit
-	STR R1, [R2, #TIMER_TCLR] @ Set the TCLR
+	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
 	
-    @ Timer3 disable overflow interrupt
-	MOV R1, #0x2
-	STR R1, [R2, #TIMER_IRQEN_CLR]
+	@ Ensure counter is reset to initial value in TCRR
+	LDR R1, =TIMER_COUNTER_VAL
+	STR R1, [timer3Base, #TIMER_TCRR]
+	STR R1, [timer3Base, #TIMER_TLDR]
 	
+	@ prepare to send 0	
 	@ Enable UART4 interrupt for change in CTS# and THR empty
 	MOV R3, #SET_UART_IER
 	STR R3, [uart4Base, #UART_IER]
@@ -233,10 +273,18 @@ SVC_BUTTON:
 	MOV R3, #GPIO_31	
 	STR R3, [gpio1Base, #GPIO_IRQ_STAT_0] @ 1 at bit 31 of GPIO_IRQ_STAT_0
 	
+	@ Disable LED if already lit
+	@ Values passed into toggleLED	
+	MOV R1, #SET_LED1	@ Set usr led 1
+	MOV R2, #LOW  	@ Set to high, on
+	MOV R3, gpio1Base @ LED is on GPIO1
+	BL _toggleLED	
+	
 					@ Timer3 settings
 	@ Ensure counter is reset to initial value in TCRR
 	LDR R1, =TIMER_COUNTER_VAL
 	STR R1, [timer3Base, #TIMER_TCRR]
+	STR R2, [timer3Base, #TIMER_TLDR]
 
     @ Timer3 enable overflow interrupt
 	MOV R1, #INT_EN
@@ -254,11 +302,6 @@ SVC_BUTTON:
 	@ Assert RTS#, request to send	
 	MOV R3, #0x02
 	STRB R3, [uart4Base, #UART_MCR]
-	
-	@ Reset pointer location to start of countdown
-	LDR R3, =CHAR_PTR
-	LDR R4, =START_COUNTDOWN
-	STR R4, [R3]
 	
 	B END_SVC	
 	

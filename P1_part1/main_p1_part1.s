@@ -58,7 +58,7 @@ WAIT_LOOP:
 		.byte CMD_CHAR 
 		.ascii "7O"  @ Voice of Robo Robert
 		.byte CMD_CHAR  
-		.ascii "9V"	 @ Set volume 0 of 9 (lowest setting, still loud)
+		.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
 		.byte CMD_CHAR
 		.ascii "4S"	 @ Speech rate reduced by 1 from default 5
 		.ascii "This better fucking work."	
