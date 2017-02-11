@@ -15,6 +15,8 @@ _init_timer3:
 .equ TIMER_TLDR,          0x40        @ TLDR                register offset
 .equ TIMER_COUNTER_VAL,   0xFFFF80FF  @ Loaded into TLDR and TCRR, 1.00793s
 
+.equ TIMER_IRQEN_SET,     0x2C        @ IRQENABLE_SET       register offset
+
 .equ SW_RESET,			  0x01		  @ soft reset in CGF	Val
 
 @ register assignment definitions
@@ -34,10 +36,9 @@ timer3Base .req R10
 	STR R2, [timer3Base, #TIMER_TLDR]
 	STR R2, [timer3Base, #TIMER_TCRR]
 	
-	@ Set Auto-reload timer and the start timer bit for TIMER3
-	@MOV R1, #0x3 			  @ bit 0 = start bit, bit 1 = auto reload bit
-	@STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
-	
+    @ Timer3 enable overflow interrupt
+	MOV R1, #0x02
+	STR R1, [timer3Base, #TIMER_IRQEN_SET]
 	
 	LDMFD SP!, {R2, R10, PC}
 .end

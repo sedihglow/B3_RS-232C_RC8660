@@ -48,6 +48,7 @@ _int_director:
 .equ TIMER_TCRR,          0x3C        @ TCRR                register offset
 .equ TIMER_TCLR,          0x38        @ TCLR                register offset
 .equ TIMER_TLDR,          0x40        @ TLDR                register offset
+.equ TIMER_IRQ_STAT,	  0x28		  @ IRQSTATUS		    register offset
 .equ TIMER_IRQEN_SET,     0x2C        @ IRQENABLE_SET       register offset
 .equ TIMER_IRQEN_CLR,	  0x30		  @ IRQENABLE_CLEAR	    register offset
 .equ INT_EN,			  0x02		  @ enable overflow INT Val
@@ -145,8 +146,6 @@ SEND_CHAR:
 	B END_SVC
 	
 RESET_VALUES:
-	
-	
     LDR R1, =BLASTOFF_LEN
     LDR R4, [R1]
     
@@ -170,14 +169,14 @@ RESET_VALUES:
 	STR R3, [uart4Base, #UART_MCR]
 	
 	LDR R1, =COUNT_VAL
-	LDR R2, [R1] @ get counter value
+	LDR R4, [R1] @ get counter value
 
-	CMP R2, #0x0
+	CMP R4, #0x0
 	BLNE SET_TIMER @ Ensure counter is reset to initial value in TCRR if needed
-	SUBNE R2, R2, #0x01
-	STRNE R2, [R1] @ store decremented value
-	MOVEQ R2, #COUNT
-	STREQ R2, [R1] @ Reset COUNT_VAL
+	SUBNE R4, R4, #0x01
+	STRNE R4, [R1] @ store decremented value
+	MOVEQ R4, #COUNT
+	STREQ R4, [R1] @ Reset COUNT_VAL
 	
 	B END_SVC
 	
@@ -204,16 +203,12 @@ END_BLASTOFF:
 SET_TIMER:
 	STMFD SP!, {R1-R2, R7, LR}
 	
-    @ Timer3 enable overflow interrupt
-	MOV R1, #INT_EN
-	STR R1, [timer3Base, #TIMER_IRQEN_SET]
-
 	@ reset timer value
 	LDR R1, =TIMER_COUNTER_VAL
 	STR R1, [timer3Base, #TIMER_TCRR]
 	
 	@ Set Auto-reload timer and the start timer bit for TIMER3
-	MOV R1, #0x3 			  @ bit 0 = start bit, bit 1 = auto reload bit
+	MOV R1, #0x1 			  @ bit 0 = start bit, bit 1 = auto reload bit
 	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
 	
 	LDMFD SP!, {R1-R2, R7, PC} @ go back to int procedure
@@ -225,12 +220,10 @@ TMR_IRQ_TST:
 	BEQ BTN_IRQ_TST   @ If it was not the timer, check button
 	
 SVC_TIMER:
+	MOV R1, #0x2
+	STR R1, [timer3Base, #TIMER_IRQ_STAT]
 
-    @ Timer3 clear INT
-	MOV R1, #INT_EN
-	STR R1, [timer3Base, #TIMER_IRQEN_CLR]
-
-	@ Set Auto-reload timer and the start timer bit for TIMER3
+	@ Disable Auto-reload timer and the start timer bit for TIMER3
 	MOV R1, #0x0 			  @ bit 0 = start bit, bit 1 = auto reload bit
 	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
 		

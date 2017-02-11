@@ -126,6 +126,12 @@ WAIT_LOOP:
 		.endr
 .align 4
 	BLASTOFF:
+		.byte 0x01
+		.ascii "7O"  @ Voice of Robo Robert
+		.byte 0x01
+		.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
+		.byte 0x01
+		.ascii "4S"	 @ Speech rate reduced by 1 from default 5
 		.ascii "10"
 		.byte 0x0D
 		.ascii "9"
