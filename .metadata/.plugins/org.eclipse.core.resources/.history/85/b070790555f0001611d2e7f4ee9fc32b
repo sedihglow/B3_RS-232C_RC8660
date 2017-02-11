@@ -145,7 +145,12 @@ SEND_CHAR:
 	B END_SVC
 	
 RESET_VALUES:
-	
+	LDR R1, =COUNT_VAL
+	LDR R2, [R1] @ get counter value
+
+	@ Ensure counter is reset to initial value in TCRR if needed
+	CMP R2, #0x1
+	BLNE SET_TIMER
 	
     LDR R1, =BLASTOFF_LEN
     LDR R4, [R1]
@@ -168,16 +173,6 @@ RESET_VALUES:
 	@ Disable RTS#	
 	MOV R3, #0x0
 	STR R3, [uart4Base, #UART_MCR]
-	
-	LDR R1, =COUNT_VAL
-	LDR R2, [R1] @ get counter value
-
-	CMP R2, #0x0
-	BLNE SET_TIMER @ Ensure counter is reset to initial value in TCRR if needed
-	SUBNE R2, R2, #0x01
-	STRNE R2, [R1] @ store decremented value
-	MOVEQ R2, #COUNT
-	STREQ R2, [R1] @ Reset COUNT_VAL
 	
 	B END_SVC
 	
@@ -225,7 +220,15 @@ TMR_IRQ_TST:
 	BEQ BTN_IRQ_TST   @ If it was not the timer, check button
 	
 SVC_TIMER:
-
+	LDR R1, =COUNT_VAL
+	LDR R2, [R1] @ get counter value
+	SUB R2, R2, #0x01
+	STR R2, [R1] @ store decremented value
+	
+	CMP R2, #0x0 @ timed count is over
+	MOV R2, #COUNT
+	STR R2, [R1] @ Reset COUNT_VAL
+	
     @ Timer3 clear INT
 	MOV R1, #INT_EN
 	STR R1, [timer3Base, #TIMER_IRQEN_CLR]

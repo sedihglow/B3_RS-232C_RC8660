@@ -145,7 +145,12 @@ SEND_CHAR:
 	B END_SVC
 	
 RESET_VALUES:
-	
+	LDR R1, =COUNT_VAL
+	LDR R2, [R1] @ get counter value
+
+	@ Ensure counter is reset to initial value in TCRR if needed
+	CMP R2, #0x0
+	BLNE SET_TIMER
 	
     LDR R1, =BLASTOFF_LEN
     LDR R4, [R1]
@@ -154,12 +159,12 @@ RESET_VALUES:
 	CMP R4, #0x0
 	BLEQ END_BLASTOFF
 	
-	CMP R4, #0xA @ at 10 characters left, we are on blastoff. 0 we are done
+	@CMP R4, #0xA @ at 10 characters left, we are on blastoff. 0 we are done
 	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
 	@ Regiser (THR) is empty IF more characters need to be sent.
-	MOVEQ R4, #SET_UART_IER
-	STREQ R4, [uart4Base, #UART_IER]
-	BEQ END_SVC
+	@MOVEQ R4, #SET_UART_IER
+	@STREQ R4, [uart4Base, #UART_IER]
+	@BEQ END_SVC
 	
 	@ Disbale UART interrupts, enabled on next button press
 	MOV R4, #0x0
@@ -168,16 +173,6 @@ RESET_VALUES:
 	@ Disable RTS#	
 	MOV R3, #0x0
 	STR R3, [uart4Base, #UART_MCR]
-	
-	LDR R1, =COUNT_VAL
-	LDR R2, [R1] @ get counter value
-
-	CMP R2, #0x0
-	BLNE SET_TIMER @ Ensure counter is reset to initial value in TCRR if needed
-	SUBNE R2, R2, #0x01
-	STRNE R2, [R1] @ store decremented value
-	MOVEQ R2, #COUNT
-	STREQ R2, [R1] @ Reset COUNT_VAL
 	
 	B END_SVC
 	
@@ -205,19 +200,18 @@ SET_TIMER:
 	STMFD SP!, {R1-R2, R7, LR}
 	
     @ Timer3 enable overflow interrupt
-	MOV R1, #INT_EN
-	STR R1, [timer3Base, #TIMER_IRQEN_SET]
+	@MOV R1, #INT_EN
+	@STR R1, [timer3Base, #TIMER_IRQEN_SET]
 
-	@ reset timer value
-	LDR R1, =TIMER_COUNTER_VAL
-	STR R1, [timer3Base, #TIMER_TCRR]
-	
 	@ Set Auto-reload timer and the start timer bit for TIMER3
 	MOV R1, #0x3 			  @ bit 0 = start bit, bit 1 = auto reload bit
 	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
 	
-	LDMFD SP!, {R1-R2, R7, PC} @ go back to int procedure
+	@ reset timer value
+	LDR R1, =TIMER_COUNTER_VAL
+	STR R1, [timer3Base, #TIMER_TCRR]
 	
+	LDMFD SP!, {R1-R2, R7, PC} @ go back to int procedure
 TMR_IRQ_TST:
 	@ Check if the timer3 IRQ interrupt occured
 	LDR R1, [intcBase, #INTC_PENDING_IRQ2]
@@ -225,7 +219,15 @@ TMR_IRQ_TST:
 	BEQ BTN_IRQ_TST   @ If it was not the timer, check button
 	
 SVC_TIMER:
-
+	LDR R1, =COUNT_VAL
+	LDR R2, [R1] @ get counter value
+	SUB R2, R2, #0x01
+	STR R2, [R1] @ store decremented value
+	
+	CMP R2, #0x0 @ timed count is over
+	MOV R2, #COUNT
+	STR R2, [R1] @ Reset COUNT_VAL
+	
     @ Timer3 clear INT
 	MOV R1, #INT_EN
 	STR R1, [timer3Base, #TIMER_IRQEN_CLR]

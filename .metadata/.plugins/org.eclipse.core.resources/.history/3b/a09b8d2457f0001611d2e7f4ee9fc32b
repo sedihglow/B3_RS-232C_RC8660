@@ -145,6 +145,15 @@ SEND_CHAR:
 	B END_SVC
 	
 RESET_VALUES:
+	LDR R1, =COUNT_VAL
+	LDR R2, [R1] @ get counter value
+	SUB R2, R2, #0x01
+	STR R2, [R1] @ store decremented value
+
+	CMP R2, #0x0
+	MOVEQ R2, #COUNT
+	STREQ R2, [R1] @ Reset COUNT_VAL
+	BLNE SET_TIMER @ Ensure counter is reset to initial value in TCRR if needed
 	
 	
     LDR R1, =BLASTOFF_LEN
@@ -168,16 +177,6 @@ RESET_VALUES:
 	@ Disable RTS#	
 	MOV R3, #0x0
 	STR R3, [uart4Base, #UART_MCR]
-	
-	LDR R1, =COUNT_VAL
-	LDR R2, [R1] @ get counter value
-
-	CMP R2, #0x0
-	BLNE SET_TIMER @ Ensure counter is reset to initial value in TCRR if needed
-	SUBNE R2, R2, #0x01
-	STRNE R2, [R1] @ store decremented value
-	MOVEQ R2, #COUNT
-	STREQ R2, [R1] @ Reset COUNT_VAL
 	
 	B END_SVC
 	

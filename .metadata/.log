@@ -3415,3 +3415,50 @@ Command-line arguments:  -os win32 -ws win32 -arch x86 -product com.ti.ccstudio.
 !MESSAGE Request for monitor: 'RequestMonitor (org.eclipse.cdt.dsf.concurrent.DataRequestMonitor@1679304): Status ERROR: com.ti.ccstudio.debug code=10004 Marker id 1078 not found. null' resulted in an error.
 !SUBENTRY 1 com.ti.ccstudio.debug 4 10004 2017-02-09 22:36:18.719
 !MESSAGE Marker id 1078 not found.
+!SESSION 2017-02-11 02:45:49.313 -----------------------------------------------
+eclipse.buildId=4.3.0.M20130911-1000
+java.version=1.6.0_13
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Framework arguments:  -product com.ti.ccstudio.branding.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product com.ti.ccstudio.branding.product
+
+!ENTRY org.eclipse.ui 4 4 2017-02-11 02:45:55.198
+!MESSAGE Unable to find Action Set: org.eclipse.rtsc.xdctools.ui.cdt.actionSet2
+
+!ENTRY org.eclipse.ui 4 4 2017-02-11 03:29:00.498
+!MESSAGE Unable to find Action Set: org.eclipse.rtsc.xdctools.ui.cdt.actionSet2
+
+!ENTRY com.ti.ccstudio.debug 1 0 2017-02-11 03:30:35.651
+!MESSAGE DS_ERROR: IcePick_D_0: Power Failure on Target CPU 
+
+
+!ENTRY com.ti.ccstudio.debug 1 0 2017-02-11 03:30:35.664
+!MESSAGE DS_ERROR: CS_DAP_DebugSS: Power Failure on Target CPU: (Error -180 @ 0x0) The controller has detected a target power loss. The user must turn-on or connect the power supply for the target. (Emulation package 0.0.0.0) 
+
+
+!ENTRY com.ti.ccstudio.debug 1 0 2017-02-11 03:33:59.020
+!MESSAGE DS_ERROR: CortxA8: GEL: Target must be connected before calling the function
+
+
+!ENTRY org.eclipse.cdt.dsf 4 10005 2017-02-11 03:33:59.023
+!MESSAGE Request for monitor: 'RequestMonitor (org.eclipse.cdt.dsf.concurrent.RequestMonitor@ead462): Status ERROR: com.ti.ccstudio.debug code=20003 Target must be connected before calling the function null' resulted in an error.
+!SUBENTRY 1 com.ti.ccstudio.debug 4 20003 2017-02-11 03:33:59.023
+!MESSAGE Target must be connected before calling the function
+
+!ENTRY com.ti.ccstudio.debug 1 0 2017-02-11 03:51:34.008
+!MESSAGE DS_ERROR: IcePick_D_0: Power Failure on Target CPU 
+
+
+!ENTRY com.ti.ccstudio.debug 1 0 2017-02-11 03:51:34.020
+!MESSAGE DS_ERROR: CS_DAP_DebugSS: Power Failure on Target CPU: (Error -180 @ 0x0) The controller has detected a target power loss. The user must turn-on or connect the power supply for the target. (Emulation package 0.0.0.0) 
+
+
+!ENTRY com.ti.ccstudio.debug 1 0 2017-02-11 03:54:30.370
+!MESSAGE DS_ERROR: CortxA8: GEL: Target must be connected before calling the function
+
+
+!ENTRY org.eclipse.cdt.dsf 4 10005 2017-02-11 03:54:30.373
+!MESSAGE Request for monitor: 'RequestMonitor (org.eclipse.cdt.dsf.concurrent.RequestMonitor@11e0306): Status ERROR: com.ti.ccstudio.debug code=20003 Target must be connected before calling the function null' resulted in an error.
+!SUBENTRY 1 com.ti.ccstudio.debug 4 20003 2017-02-11 03:54:30.373
+!MESSAGE Target must be connected before calling the function

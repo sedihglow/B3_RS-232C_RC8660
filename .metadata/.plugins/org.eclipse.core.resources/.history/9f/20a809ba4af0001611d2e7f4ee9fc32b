@@ -145,14 +145,29 @@ SEND_CHAR:
 	B END_SVC
 	
 RESET_VALUES:
-	
+	LDR R1, =COUNT_VAL
+	LDR R2, [R1] @ get counter value
+
+					@ Timer3 settings
+	@ Ensure counter is reset to initial value in TCRR
+	LDR R1, =TIMER_COUNTER_VAL
+	STR R1, [timer3Base, #TIMER_TCRR]
+	STR R2, [timer3Base, #TIMER_TLDR]
+
+    @ Timer3 enable overflow interrupt
+	MOV R1, #INT_EN
+	STR R1, [timer3Base, #TIMER_IRQEN_SET]
+
+	@ Set Auto-reload timer and the start timer bit for TIMER3
+	MOV R1, #0x3 			  @ bit 0 = start bit, bit 1 = auto reload bit
+	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
 	
     LDR R1, =BLASTOFF_LEN
     LDR R4, [R1]
     
-	@ Reset char pointer and BLASTOFF_LEN Light LED if length reaches 0
+	@ Reset char pointer and BLASTOFF_LEN Light LED
 	CMP R4, #0x0
-	BLEQ END_BLASTOFF
+	BL END_BLASTOFF
 	
 	CMP R4, #0xA @ at 10 characters left, we are on blastoff. 0 we are done
 	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
@@ -169,20 +184,10 @@ RESET_VALUES:
 	MOV R3, #0x0
 	STR R3, [uart4Base, #UART_MCR]
 	
-	LDR R1, =COUNT_VAL
-	LDR R2, [R1] @ get counter value
-
-	CMP R2, #0x0
-	BLNE SET_TIMER @ Ensure counter is reset to initial value in TCRR if needed
-	SUBNE R2, R2, #0x01
-	STRNE R2, [R1] @ store decremented value
-	MOVEQ R2, #COUNT
-	STREQ R2, [R1] @ Reset COUNT_VAL
-	
 	B END_SVC
 	
 END_BLASTOFF:
-	STMFD SP!, {R1-R3, R9, LR}
+	STMFD SP!, {R1-R3, LR}
 	
 	@ reset values	
 	LDR R1, =CHAR_PTR
@@ -199,24 +204,7 @@ END_BLASTOFF:
 	MOV R3, gpio1Base   @ LED is on GPIO1
 	BL _toggleLED	
 	
-	LDMFD SP!, {R1-R3, R9, PC} @ go back to int procedure
-	
-SET_TIMER:
-	STMFD SP!, {R1-R2, R7, LR}
-	
-    @ Timer3 enable overflow interrupt
-	MOV R1, #INT_EN
-	STR R1, [timer3Base, #TIMER_IRQEN_SET]
-
-	@ reset timer value
-	LDR R1, =TIMER_COUNTER_VAL
-	STR R1, [timer3Base, #TIMER_TCRR]
-	
-	@ Set Auto-reload timer and the start timer bit for TIMER3
-	MOV R1, #0x3 			  @ bit 0 = start bit, bit 1 = auto reload bit
-	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
-	
-	LDMFD SP!, {R1-R2, R7, PC} @ go back to int procedure
+	LDMFD SP!, {R1-R3, PC} @ go back to int procedure
 	
 TMR_IRQ_TST:
 	@ Check if the timer3 IRQ interrupt occured
@@ -225,14 +213,13 @@ TMR_IRQ_TST:
 	BEQ BTN_IRQ_TST   @ If it was not the timer, check button
 	
 SVC_TIMER:
-
-    @ Timer3 clear INT
-	MOV R1, #INT_EN
-	STR R1, [timer3Base, #TIMER_IRQEN_CLR]
-
-	@ Set Auto-reload timer and the start timer bit for TIMER3
-	MOV R1, #0x0 			  @ bit 0 = start bit, bit 1 = auto reload bit
-	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
+	LDR R1, =COUNT_VAL
+	LDR R2, [R1] @ get counter value
+	SUB R2, R2, #0x01
+	STR R2, [R1] @ store decremented value
+	
+	CMP R2, #0x0 @ timed count is over
+	BEQ END_COUNTDOWN
 		
 	@ Enable UART4 interrupt for change in CTS# and THR empty
 	MOV R3, #SET_UART_IER
@@ -244,6 +231,40 @@ SVC_TIMER:
 	
 	B END_SVC
 	
+END_COUNTDOWN:
+	@ Reset countdown value
+	LDR R1, =COUNT_VAL
+	MOV R2, #COUNT
+	STR R2, [R1]
+	
+	@ Initialize timer3 registers. set count and overflow INT generation	
+	MOV R2, #0x01	 @ value for software reset in TIOCP_CFG
+	STR R2, [timer3Base, #TIMER_TIOCP_CFG]
+	
+    @ Timer3 enable overflow interrupt
+	MOV R1, #INT_EN
+	STR R1, [timer3Base, #TIMER_IRQEN_CLR]
+
+	@ Set Auto-reload timer and the start timer bit for TIMER3
+	MOV R1, #0x0 			  @ bit 0 = start bit, bit 1 = auto reload bit
+	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
+	
+	@ Ensure counter is reset to initial value in TCRR
+	LDR R1, =TIMER_COUNTER_VAL
+	STR R1, [timer3Base, #TIMER_TCRR]
+	STR R1, [timer3Base, #TIMER_TLDR]
+	
+	@ prepare to send 0	
+	@ Enable UART4 interrupt for change in CTS# and THR empty
+	MOV R3, #SET_UART_IER
+	STR R3, [uart4Base, #UART_IER]
+	
+	@ Assert RTS#, request to send	
+	MOV R3, #0x02
+	STRB R3, [uart4Base, #UART_MCR]
+	
+	B END_SVC
+
 BTN_IRQ_TST:
 	@ Check if INT occured from GPIO1
 	LDR R3, [intcBase, #INTC_PENDING_IRQ3]
