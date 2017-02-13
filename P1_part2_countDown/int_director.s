@@ -23,6 +23,7 @@ _int_director:
 
 @ GPIO definitions
 .equ GPIO1_BASE,		  0x4804C000  @ GPIO1 				Base Address
+.equ GPIO_FALLING_DETECT, 0x14C		  @ GPIO_FALLING_DETECT register offset
 .equ GPIO_IRQ_STAT_0,	  0x2C	  	  @ GPIO_IRQSTATUS_0 	register offset
 .equ GPIO_31,			  0x80000000  @ GPIO_31 raised bit	Mask
 
@@ -56,8 +57,9 @@ _int_director:
 .equ TIMER_COUNTER_VAL,   0xFFFF80FF  @ Store into TLDR and TCRR, 1.00793s
 
 @ Required countdown values to manually set
-.equ MSG_LEN, 0x21 @ 33
-.equ COUNT,  0x0A  @ 10
+.equ MSG_LEN, 	  0x2A @ 42
+.equ COUNT,  	  0x0A @ 10
+.equ AT_BLASTOFF, 0x0A @ Message length value when blastoff is reached
 
 @ LED definitions
 .equ SET_LED1,    	  0x00400000      @ Mask to set LED1, GPIO1_22
@@ -153,7 +155,7 @@ RESET_VALUES:
 	CMP R4, #0x0
 	BLEQ END_BLASTOFF
 	
-	CMP R4, #0xA @ at 10 characters left, we are on blastoff. 0 we are done
+	CMP R4, #AT_BLASTOFF
 	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
 	@ Regiser (THR) is empty IF more characters need to be sent.
 	MOVEQ R4, #SET_UART_IER
@@ -198,6 +200,10 @@ END_BLASTOFF:
 	MOV R3, gpio1Base   @ LED is on GPIO1
 	BL _toggleLED	
 	
+	ADD R1, gpio1Base, #GPIO_FALLING_DETECT
+	MOV R2, #GPIO_31 @ No other GPIO interrupts used, so can just write the bit
+	STR R2, [R1]
+	
 	LDMFD SP!, {R1-R3, R9, PC} @ go back to int procedure
 	
 SET_TIMER:
@@ -223,7 +229,7 @@ SVC_TIMER:
 	MOV R1, #0x2
 	STR R1, [timer3Base, #TIMER_IRQ_STAT]
 
-	@ Disable Auto-reload timer and the start timer bit for TIMER3
+	@ Disable timer 3 counter
 	MOV R1, #0x0 			  @ bit 0 = start bit, bit 1 = auto reload bit
 	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
 		
@@ -269,6 +275,11 @@ SVC_BUTTON:
 	@ Assert RTS#, request to send	
 	MOV R3, #0x02
 	STRB R3, [uart4Base, #UART_MCR]
+	
+	@ Disable future button interrupts
+	ADD R1, gpio1Base, #GPIO_FALLING_DETECT
+	MOV R2, #0x0 @ No other GPIO1 interrupts are being used, so just write 0x0
+	STR R2, [R1]	
 	
 	B END_SVC	
 	

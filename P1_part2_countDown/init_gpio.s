@@ -42,9 +42,7 @@ gpio1Base .req R9					  @ R9 reserved for gpio1 base address
 	@ Set interupt to trigger from high to low on GPIO1_31	
 	ADD R4, gpio1Base, #GPIO_FALLING_DETECT
 	MOV R5, #GPIO1_31_BIT
-	LDR R6, [R4]
-	ORR R6, R6, R5			@ Set bit for GPIO1_31 falling edge detect
-	STR R6, [R4]			@ Store back in reg
+	STR R5, [R4]			@ Store val in reg, no other gpio being used so rmw
 	
 	@ Enable interrupt field for GPIO_31
 	STR R5, [gpio1Base, #GPIO_IRQSTAT_SET0]

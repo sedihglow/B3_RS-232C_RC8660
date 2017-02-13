@@ -31,11 +31,6 @@ timer3Base .req R10
 	MOV R2, #SW_RESET	 @ value for software reset in TIOCP_CFG
 	STR R2, [timer3Base, #TIMER_TIOCP_CFG]
 	
-	@ Set count value in TLDR and TCRR
-	LDR R2, =TIMER_COUNTER_VAL
-	STR R2, [timer3Base, #TIMER_TLDR]
-	STR R2, [timer3Base, #TIMER_TCRR]
-	
     @ Timer3 enable overflow interrupt
 	MOV R1, #0x02
 	STR R1, [timer3Base, #TIMER_IRQEN_SET]

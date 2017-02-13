@@ -77,7 +77,7 @@ _start:
 @ register assignments
 
 .equ COUNT, 0x0A
-.equ MSG_LEN, 0x21 @33
+.equ MSG_LEN, 0x2A
 
 @********************** START _start *******************************************
 
@@ -124,6 +124,12 @@ WAIT_LOOP:
 		.rept 1024
 			.word 0x0000
 		.endr
+	CHAR_PTR:
+		.word BLASTOFF
+	COUNT_VAL:
+		.word COUNT
+	BLASTOFF_LEN:
+		.word MSG_LEN
 .align 4
 	BLASTOFF:
 		.byte 0x01
@@ -131,7 +137,7 @@ WAIT_LOOP:
 		.byte 0x01
 		.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
 		.byte 0x01
-		.ascii "4S"	 @ Speech rate reduced by 1 from default 5
+		.ascii "4S"	 @ Speech rate reduced by 1 from default 5*/
 		.ascii "10"
 		.byte 0x0D
 		.ascii "9"
@@ -156,14 +162,5 @@ WAIT_LOOP:
 		.byte 0x0D
 		.ascii "Blast off"
 		.byte  0x0D
-.align 4
-	CHAR_PTR:
-		.word BLASTOFF
-.align 4
-	COUNT_VAL:
-		.word COUNT
-.align 4
-	BLASTOFF_LEN:
-		.word MSG_LEN
 .end
 @@@@@@@@@@ EOF @@@@@@@@@@
