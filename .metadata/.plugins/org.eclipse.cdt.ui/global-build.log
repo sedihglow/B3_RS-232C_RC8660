@@ -2,12 +2,12 @@
 **** Build of configuration Debug for project P1_part2_countDown ****
 
 "c:\\ti\\ccsv6\\utils\\bin\\gmake" -k all 
-'Building file: ../main_p1_part2.s'
+'Building file: ../init_uart4.s'
 'Invoking: GNU Compiler'
-"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -c -mcpu=cortex-a8 -mtune=cortex-a8 -march=armv7-a -marm -Dam3359 -I"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/arm-none-eabi/include" -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -MMD -MP -MF"main_p1_part2.d" -MT"main_p1_part2.d" -o"main_p1_part2.o"  "../main_p1_part2.s"
-../main_p1_part2.s: Assembler messages:
-../main_p1_part2.s: Warning: end of file in comment; newline inserted
-'Finished building: ../main_p1_part2.s'
+"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -c -mcpu=cortex-a8 -mtune=cortex-a8 -march=armv7-a -marm -Dam3359 -I"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/arm-none-eabi/include" -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -MMD -MP -MF"init_uart4.d" -MT"init_uart4.d" -o"init_uart4.o"  "../init_uart4.s"
+../init_uart4.s: Assembler messages:
+../init_uart4.s: Warning: end of file in comment; newline inserted
+'Finished building: ../init_uart4.s'
 ' '
 'Building target: P1_part2_countDown.out'
 'Invoking: GNU Linker'

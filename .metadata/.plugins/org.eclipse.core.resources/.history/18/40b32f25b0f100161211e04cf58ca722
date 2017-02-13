@@ -24,8 +24,8 @@ _init_uart4:
 .equ SET_UART_IER,  0x000A     @ THRIT,MODEMSTIT 16bit    Val
 .equ LCR_CONF_MODE, 0x0083     @ Char len 8bit, conf mode Val
 .equ LCR_OP_MODE,	0x0003     @ Char len 8bit, op mode   VAl
-.equ HIGH_DIV,		0x00	   @ High bytes of divisor	  Val
-.equ LOW_DIV,		0x1A 	   @ Low bytes of divisor	  Val
+.equ HIGH_DIV,		0x02	   @ High bytes of divisor	  Val
+.equ LOW_DIV,		0x71 	   @ Low bytes of divisor	  Val
 .equ SET_UART16x,	0x0000	   @ sets lower 3 bits to 0	  Val
 .equ CR_LOCKBAUD,   0x0D	   @ '\r', used to lock baud rate and end of msg
 

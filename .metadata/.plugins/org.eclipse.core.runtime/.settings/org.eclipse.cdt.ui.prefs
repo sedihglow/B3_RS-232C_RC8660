@@ -2,6 +2,7 @@ asm_directive=85,255,85
 asm_label=225,0,0
 c_braces=255,85,85
 c_comment_task_tag=85,255,255
+c_default=192,192,192
 c_keyword=85,255,85
 c_multi_line_comment=85,255,255
 c_numbers=255,85,255
