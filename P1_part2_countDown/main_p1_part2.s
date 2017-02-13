@@ -61,7 +61,7 @@ WAIT_LOOP:
 		.rept 1024
 			.word 0x0000
 		.endr
-	CHAR_PTR:
+/*	CHAR_PTR:
 		.word BLASTOFF
 	COUNT_VAL:
 		.word COUNT
@@ -74,7 +74,7 @@ WAIT_LOOP:
 		.byte 0x01
 		.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
 		.byte 0x01
-		.ascii "4S"	 @ Speech rate reduced by 1 from default 5*/
+		.ascii "4S"	 @ Speech rate reduced by 1 from default 5
 		.ascii "10"
 		.byte 0x0D
 		.ascii "9"
@@ -99,5 +99,6 @@ WAIT_LOOP:
 		.byte 0x0D
 		.ascii "Blast off"
 		.byte  0x0D
+*/
 .end
 @@@@@@@@@@ EOF @@@@@@@@@@

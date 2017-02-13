@@ -290,5 +290,45 @@ END_SVC:
 
 	LDMFD SP!, {R3-R5, R7-R10, LR}
 	SUBS PC, LR, #0x4
+
+.data
+.align 4
+	CHAR_PTR:
+		.word BLASTOFF
+	COUNT_VAL:
+		.word COUNT
+	BLASTOFF_LEN:
+		.word MSG_LEN
+	BLASTOFF:
+		.byte 0x01
+		.ascii "7O"  @ Voice of Robo Robert
+		.byte 0x01
+		.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
+		.byte 0x01
+		.ascii "4S"	 @ Speech rate reduced by 1 from default 5
+		.ascii "10"
+		.byte 0x0D
+		.ascii "9"
+		.byte 0x0D
+		.ascii "8"
+		.byte 0x0D
+		.ascii "7"
+		.byte 0x0D
+		.ascii "6"
+		.byte 0x0D
+		.ascii "5"
+		.byte 0x0D
+		.ascii "4"
+		.byte 0x0D
+		.ascii "3"
+		.byte 0x0D
+		.ascii "2"
+		.byte 0x0D
+		.ascii "1"
+		.byte 0x0D
+		.ascii "0"
+		.byte 0x0D
+		.ascii "Blast off"
+		.byte  0x0D
 .end
 @****************** EOF ****************

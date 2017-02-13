@@ -14,20 +14,13 @@ _init_uart4:
 .equ UART_DLH,      0x04 	   @ DLH div latch high       register offset 
 .equ UART_DLL,      0x0		   @ DLL div latch low        register offset
 .equ UART_MDR1,		0x20	   @ MDR1, Mode def reg 1	  register offset
-.equ UART_TXHR,	    0x0	  	   @ THR Transmit Holding     register offset
-.equ UART_FCR,      0x8	  	   @ FIFO control		      register offset
-.equ MODEM_CTRL,    0x10 	   @ Moden CTRL 		 	  register offset
-.equ UART_IIR,      0x8	 	   @ Interrupt ID		      register offset
-.equ UART_IER,      0x4	 	   @ IER_UART, Int EN         register offset
 
 @ Set values to use in UART4 registers
-.equ SET_UART_IER,  0x000A     @ THRIT,MODEMSTIT 16bit    Val
 .equ LCR_CONF_MODE, 0x0083     @ Char len 8bit, conf mode Val
 .equ LCR_OP_MODE,	0x0003     @ Char len 8bit, op mode   VAl
 .equ HIGH_DIV,		0x00	   @ High bytes of divisor	  Val
 .equ LOW_DIV,		0x1A 	   @ Low bytes of divisor	  Val
 .equ SET_UART16x,	0x0000	   @ sets lower 3 bits to 0	  Val
-.equ CR_LOCKBAUD,   0x0D	   @ '\r', used to lock baud rate and end of msg
 
 @ reg assignment definitions
 uart4Base .req R10

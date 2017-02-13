@@ -10,9 +10,6 @@ _init_syth_8660:
 @ UART definitions
 .equ UART4_BASE,    0x481A8000 @ UART4          	      Base Address
 .equ UART_TXHR,	    0x0	  	   @ THR Transmit Holding     register offset
-.equ UART_MCR,      0x10 	   @ Modem CTRL 			  register offset
-.equ UART_MSR,	    0x18	   @ Modem Status Reg 	      register offset
-.equ UART_LSR,		0x14	   @ Line control reg		  register offset
 
 .equ CR_LOCKBAUD,   0x0D	   @ Character to send to 8660 to lock Baud rate
 
