@@ -156,6 +156,10 @@ RESET_VALUES:
 	BLEQ END_BLASTOFF
 	
 	CMP R4, #AT_BLASTOFF
+	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
+	@ Regiser (THR) is empty IF more characters need to be sent.
+	MOVEQ R4, #SET_UART_IER
+	STREQ R4, [uart4Base, #UART_IER]
 	BEQ END_SVC
 	
 	@ Disbale UART interrupts, enabled on next button press

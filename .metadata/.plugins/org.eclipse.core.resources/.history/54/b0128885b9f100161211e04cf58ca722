@@ -156,6 +156,10 @@ RESET_VALUES:
 	BLEQ END_BLASTOFF
 	
 	CMP R4, #AT_BLASTOFF
+	@ Set interrupt to generate is CTS# changes state and if Transmit Holding 
+	@ Regiser (THR) is empty IF more characters need to be sent.
+	MOVEQ R4, #SET_UART_IER
+	STREQ R4, [uart4Base, #UART_IER]
 	BEQ END_SVC
 	
 	@ Disbale UART interrupts, enabled on next button press
@@ -288,42 +292,6 @@ END_SVC:
 	SUBS PC, LR, #0x4
 
 .data
-	CHAR_PTR:
-		.word BLASTOFF
-	COUNT_VAL:
-		.word COUNT
-	BLASTOFF_LEN:
-		.word MSG_LEN
-	BLASTOFF:
-		.byte 0x01
-		.ascii "7O"  @ Voice of Robo Robert
-		.byte 0x01
-		.ascii "0V"	 @ Set volume 0 of 9 (lowest setting, still loud)
-		.byte 0x01
-		.ascii "4S"	 @ Speech rate reduced by 1 from default 5
-		.ascii "10"
-		.byte 0x0D
-		.ascii "9"
-		.byte 0x0D
-		.ascii "8"
-		.byte 0x0D
-		.ascii "7"
-		.byte 0x0D
-		.ascii "6"
-		.byte 0x0D
-		.ascii "5"
-		.byte 0x0D
-		.ascii "4"
-		.byte 0x0D
-		.ascii "3"
-		.byte 0x0D
-		.ascii "2"
-		.byte 0x0D
-		.ascii "1"
-		.byte 0x0D
-		.ascii "0"
-		.byte 0x0D
-		.ascii "Blast off"
-		.byte  0x0D
+
 .end
 @****************** EOF ****************
