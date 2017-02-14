@@ -2,17 +2,6 @@
 **** Build of configuration Debug for project P1_part2_countDown ****
 
 "c:\\ti\\ccsv6\\utils\\bin\\gmake" -k all 
-'Building file: ../init_timer3.s'
-'Invoking: GNU Compiler'
-"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -c -mcpu=cortex-a8 -mtune=cortex-a8 -march=armv7-a -marm -Dam3359 -I"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/arm-none-eabi/include" -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -MMD -MP -MF"init_timer3.d" -MT"init_timer3.d" -o"init_timer3.o"  "../init_timer3.s"
-../init_timer3.s: Assembler messages:
-../init_timer3.s: Warning: end of file in comment; newline inserted
-'Finished building: ../init_timer3.s'
-' '
-'Building target: P1_part2_countDown.out'
-'Invoking: GNU Linker'
-"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -Dam3359 -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -Wl,-Map,"P1_part2_countDown.map" -nostartfiles -Wl,--defsym,STACKSIZE=0x18000 -Wl,--defsym,HEAPSIZE=0x400 -o"P1_part2_countDown.out" "./init_clocks.o" "./init_gpio.o" "./init_interrupt.o" "./init_pinMapping.o" "./init_syth_8660.o" "./init_timer3.o" "./init_uart4.o" "./int_director.o" "./main_p1_part2.o" "./startup_ARMCA8.o" "./toggleLED.o" -Wl,-T"../AM335x.lds"  -Wl,--start-group -l"c" -l"gcc" -l"nosys" -Wl,--end-group 
-'Finished building target: P1_part2_countDown.out'
-' '
+gmake: Nothing to be done for `all'.
 
 **** Build Finished ****

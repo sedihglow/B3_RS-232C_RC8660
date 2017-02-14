@@ -1015,3 +1015,35 @@ java.lang.NullPointerException
 !ENTRY com.ti.ccstudio.debug 1 0 2017-02-12 18:30:56.317
 !MESSAGE DS_ERROR: CS_DAP_DebugSS: Power Failure on Target CPU: (Error -180 @ 0x0) The controller has detected a target power loss. The user must turn-on or connect the power supply for the target. (Emulation package 0.0.0.0) 
 
+
+!ENTRY org.eclipse.ui 4 4 2017-02-13 03:36:48.680
+!MESSAGE Unable to find Action Set: org.eclipse.rtsc.xdctools.ui.cdt.actionSet2
+!SESSION 2017-02-14 13:24:39.890 -----------------------------------------------
+eclipse.buildId=4.3.0.M20130911-1000
+java.version=1.6.0_13
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Framework arguments:  -product com.ti.ccstudio.branding.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product com.ti.ccstudio.branding.product
+
+!ENTRY org.eclipse.ui 4 4 2017-02-14 13:24:50.116
+!MESSAGE Unable to find Action Set: org.eclipse.rtsc.xdctools.ui.cdt.actionSet2
+
+!ENTRY org.eclipse.ui 4 4 2017-02-14 13:25:23.510
+!MESSAGE Unable to find Action Set: org.eclipse.rtsc.xdctools.ui.cdt.actionSet2
+
+!ENTRY com.ti.ccstudio.debug 1 0 2017-02-14 13:25:46.150
+!MESSAGE DS_ERROR: IcePick_D_0: Error connecting to the target: (Error -180 @ 0x0) The controller has detected a target power loss. The user must turn-on or connect the power supply for the target. (Emulation package 5.1.507.0) 
+
+
+!ENTRY com.ti.ccstudio.debug 1 0 2017-02-14 13:25:46.286
+!MESSAGE DS_ERROR: Error connecting to the target:
+(Error -180 @ 0x0)
+The controller has detected a target power loss.
+The user must turn-on or connect the power supply for the target.
+(Emulation package 5.1.507.0)
+
+
+!ENTRY com.ti.ccstudio.debug 1 0 2017-02-14 13:28:10.823
+!MESSAGE DS_ERROR: CortxA8: GEL: Error while executing OnFileLoaded( 0, 1): Could not read register CPSR: Target is not connected 	at (CPSR&=~(0x20)) [beagleboneblack.gel:294] 	at AM335xStartState() [beagleboneblack.gel:300] 	at OnFileLoaded(0, 1) .
+

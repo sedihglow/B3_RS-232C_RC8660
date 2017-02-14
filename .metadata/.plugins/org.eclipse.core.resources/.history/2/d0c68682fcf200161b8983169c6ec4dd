@@ -12,12 +12,10 @@ ORDERED_OBJS += \
 "./init_interrupt.o" \
 "./init_pinMapping.o" \
 "./init_syth_8660.o" \
-"./init_timer3.o" \
 "./init_uart4.o" \
 "./int_director.o" \
-"./main_p1_part2.o" \
+"./main_p1_part1.o" \
 "./startup_ARMCA8.o" \
-"./toggleLED.o" \
 -Wl,-T"../AM335x.lds" \
 $(GEN_CMDS__FLAG) \
 -Wl,--start-group \
@@ -122,32 +120,32 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-P1_part2_countDown.out \
+P1_part1.out \
 
 EXE_OUTPUTS__QUOTED += \
-"P1_part2_countDown.out" \
+"P1_part1.out" \
 
 BIN_OUTPUTS += \
-P1_part2_countDown.hex \
+P1_part1.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"P1_part2_countDown.hex" \
+"P1_part1.hex" \
 
 
 # All Target
-all: P1_part2_countDown.out
+all: P1_part1.out
 
 # Tool invocations
-P1_part2_countDown.out: $(OBJS) $(LDS_SRCS) $(GEN_CMDS)
+P1_part1.out: $(OBJS) $(LDS_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GNU Linker'
-	"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -Dam3359 -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -Wl,-Map,"P1_part2_countDown.map" -nostartfiles -Wl,--defsym,STACKSIZE=0x18000 -Wl,--defsym,HEAPSIZE=0x400 -o"P1_part2_countDown.out" $(ORDERED_OBJS)
+	"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-gcc.exe" -Dam3359 -Xassembler -a=a.lst -g -gstrict-dwarf -Wall -Wl,-Map,"P1_part1.map" -nostartfiles -Wl,--defsym,STACKSIZE=0x18000 -Wl,--defsym,HEAPSIZE=0x400 -o"P1_part1.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-P1_part2_countDown.hex: $(EXE_OUTPUTS)
+P1_part1.hex: $(EXE_OUTPUTS)
 	@echo 'Invoking: GNU Objcopy Utility'
-	"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-objcopy.exe"  $(EXE_OUTPUTS__QUOTED) "P1_part2_countDown.hex"
+	"c:/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_7-2013q3/bin/arm-none-eabi-objcopy.exe"  $(EXE_OUTPUTS__QUOTED) "P1_part1.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
@@ -155,8 +153,8 @@ P1_part2_countDown.hex: $(EXE_OUTPUTS)
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
 	-$(RM) "startup_ARMCA8.d" 
-	-$(RM) "init_clocks.d" "init_gpio.d" "init_interrupt.d" "init_pinMapping.d" "init_syth_8660.d" "init_timer3.d" "init_uart4.d" "int_director.d" "main_p1_part2.d" "toggleLED.d" 
-	-$(RM) "init_clocks.o" "init_gpio.o" "init_interrupt.o" "init_pinMapping.o" "init_syth_8660.o" "init_timer3.o" "init_uart4.o" "int_director.o" "main_p1_part2.o" "startup_ARMCA8.o" "toggleLED.o" 
+	-$(RM) "init_clocks.d" "init_gpio.d" "init_interrupt.d" "init_pinMapping.d" "init_syth_8660.d" "init_uart4.d" "int_director.d" "main_p1_part1.d" 
+	-$(RM) "init_clocks.o" "init_gpio.o" "init_interrupt.o" "init_pinMapping.o" "init_syth_8660.o" "init_uart4.o" "int_director.o" "main_p1_part1.o" "startup_ARMCA8.o" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

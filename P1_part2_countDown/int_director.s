@@ -209,7 +209,7 @@ SET_TIMER:
 	LDR R1, =TIMER_COUNTER_VAL
 	STR R1, [timer3Base, #TIMER_TCRR]
 	
-	@ Set Auto-reload timer and the start timer bit for TIMER3
+	@ Set timer, the start timer bit for TIMER3
 	MOV R1, #0x1 			  @ bit 0 = start bit, bit 1 = auto reload bit
 	STR R1, [timer3Base, #TIMER_TCLR] @ Set the TCLR 
 	
@@ -259,8 +259,8 @@ SVC_BUTTON:
 	@ Disable LED if already lit
 	@ Values passed into toggleLED	
 	MOV R1, #SET_LED1	@ Set usr led 1
-	MOV R2, #LOW  	@ Set to high, on
-	MOV R3, gpio1Base @ LED is on GPIO1
+	MOV R2, #LOW  	    @ Set to high, on
+	MOV R3, gpio1Base   @ LED is on GPIO1
 	BL _toggleLED	
 	
 					@ UART4 settings
